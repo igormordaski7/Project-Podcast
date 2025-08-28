@@ -1,0 +1,36 @@
+.mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #D4EDDA;
+  padding: 0.75rem 0; /* No horizontal padding on header itself */
+  width: 100%;
+}
+
+.mini-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px; /* Fixed width for content */
+  margin: 0 auto;
+  padding: 0 20px; /* Internal padding for content */
+}
+
+.mini-header-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background-color: #E0E0E0;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  color: #555;
+  border-radius: 0; /* No border radius */
+  width: 250px; /* Fixed width */
+  text-align: center;
+}

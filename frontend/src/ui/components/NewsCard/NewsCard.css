@@ -1,0 +1,6 @@
+.news-card {
+  background-color: #D4EDDA;
+  width: 100%;
+  height: 400px; /* Fixed height */
+  border-radius: 0; /* No border radius */
+}

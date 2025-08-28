@@ -1,0 +1,89 @@
+.header {
+  background-color: #D4EDDA;
+  color: #333;
+  padding: 1.2rem 0; /* aumenta um pouco a altura */
+  width: 100%;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px; /* aumenta a largura do conteúdo */
+  margin: 0 auto;
+  padding: 0 30px; /* mais espaço horizontal */
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo svg {
+  width: 36px;   /* logo maior */
+  height: 36px;
+}
+
+.header-nav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center; /* centraliza o menu */
+  gap: 50px; /* maior espaço entre os links */
+}
+
+.header-nav a {
+  color: #333;
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 0 15px;
+  line-height: 1;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.header-nav a:hover,
+.header-nav a.active {
+  border-color: #333;
+}
+
+.header-user-section {
+  position: relative;
+}
+
+.header-user-icon {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.header-user-icon svg {
+  width: 30px;
+  height: 30px;
+  color: #333;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 110%; /* um pouco mais abaixo do botão */
+  right: 0;
+  background-color: #f0f0f0;
+  border-radius: 6px; /* bordas levemente arredondadas */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.user-dropdown a {
+  padding: 12px 16px; /* mais confortável para clicar */
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.user-dropdown a:hover {
+  background-color: #e0e0e0;
+}

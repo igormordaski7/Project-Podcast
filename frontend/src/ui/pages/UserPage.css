@@ -1,0 +1,80 @@
+.user-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0; /* No horizontal padding on page itself */
+  background-color: #fff;
+  position: relative;
+  overflow: hidden;
+  min-height: 80vh;
+}
+
+/* Simple soundwave placeholder */
+.user-page::before {
+  content: '.........';
+  position: absolute;
+  left: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12rem;
+  color: #333;
+  font-weight: bold;
+  z-index: 1;
+  opacity: 0.3;
+}
+
+.user-page::after {
+  content: '.........';
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12rem;
+  color: #333;
+  font-weight: bold;
+  z-index: 1;
+  opacity: 0.3;
+}
+
+.form-container {
+  background-color: #D4EDDA;
+  padding: 3rem;
+  border-radius: 0; /* No border radius */
+  width: 100%;
+  max-width: 500px; /* Fixed width */
+  margin: 0 auto; /* Center the form */
+  z-index: 2;
+}
+
+.form-section h2 {
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.form-section + .form-section {
+  margin-top: 3rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 0; /* No border radius */
+  background-color: white;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
