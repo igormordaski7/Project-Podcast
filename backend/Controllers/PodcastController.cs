@@ -20,7 +20,6 @@ namespace MeuProjeto.Controllers
         {
             var result = await _supabase.Client.From<Podcast>().Get();
 
-            // Mapear BaseModel para DTO
             var dtos = result.Models.Select(p => new PodcastDto
             {
                 Id = p.Id,
@@ -37,7 +36,6 @@ namespace MeuProjeto.Controllers
             if (dto == null)
                 return BadRequest("Podcast inválido.");
 
-            // Mapear DTO para BaseModel
             var podcast = new Podcast
             {
                 Id = dto.Id,
@@ -47,7 +45,6 @@ namespace MeuProjeto.Controllers
 
             var result = await _supabase.Client.From<Podcast>().Insert(podcast);
 
-            // Retornar apenas o DTO limpo
             var created = result.Models.FirstOrDefault();
             if (created == null) return BadRequest("Não foi possível criar o podcast.");
 
@@ -59,6 +56,58 @@ namespace MeuProjeto.Controllers
             };
 
             return Ok(createdDto);
+        }
+
+        // 🔹 PUT - Atualizar podcast existente
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] PodcastDto dto)
+        {
+            if (dto == null || id != dto.Id)
+                return BadRequest("Dados inválidos para atualização.");
+
+            // Buscar o podcast existente
+            var existing = await _supabase.Client
+                .From<Podcast>()
+                .Where(p => p.Id == id)
+                .Single();
+
+            if (existing == null)
+                return NotFound("Podcast não encontrado.");
+
+            // Atualizar os campos
+            existing.Titulo = dto.Titulo;
+            existing.Descricao = dto.Descricao;
+
+            var result = await _supabase.Client.From<Podcast>().Update(existing);
+
+            var updated = result.Models.FirstOrDefault();
+            if (updated == null) return BadRequest("Erro ao atualizar o podcast.");
+
+            var updatedDto = new PodcastDto
+            {
+                Id = updated.Id,
+                Titulo = updated.Titulo,
+                Descricao = updated.Descricao
+            };
+
+            return Ok(updatedDto);
+        }
+
+        // 🔹 DELETE - Remover podcast
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var existing = await _supabase.Client
+                .From<Podcast>()
+                .Where(p => p.Id == id)
+                .Single();
+
+            if (existing == null)
+                return NotFound("Podcast não encontrado.");
+
+            await _supabase.Client.From<Podcast>().Delete(existing);
+
+            return Ok("Podcast excluído com sucesso!"); // 204
         }
     }
 }
