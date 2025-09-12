@@ -14,6 +14,12 @@ namespace MeuProjeto.Models
 
         [Column("descricao")]
         public string Descricao { get; set; }
+
+        [Column("capa_url")]
+        public string? CapaUrl { get; set; }
+
+        [Column("audio_url")]
+        public string? AudioUrl { get; set; }
     }
 }
  

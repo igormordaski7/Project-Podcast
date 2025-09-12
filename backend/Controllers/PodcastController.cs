@@ -24,7 +24,9 @@ namespace MeuProjeto.Controllers
             {
                 Id = p.Id,
                 Titulo = p.Titulo,
-                Descricao = p.Descricao
+                Descricao = p.Descricao,
+                AudioUrl = p.AudioUrl,
+                CapaUrl = p.CapaUrl
             });
 
             return Ok(dtos);
@@ -38,13 +40,13 @@ namespace MeuProjeto.Controllers
 
             var podcast = new Podcast
             {
-                Id = dto.Id,
                 Titulo = dto.Titulo,
-                Descricao = dto.Descricao
+                Descricao = dto.Descricao,
+                AudioUrl = dto.AudioUrl,
+                CapaUrl = dto.CapaUrl
             };
 
             var result = await _supabase.Client.From<Podcast>().Insert(podcast);
-
             var created = result.Models.FirstOrDefault();
             if (created == null) return BadRequest("Não foi possível criar o podcast.");
 
@@ -52,20 +54,20 @@ namespace MeuProjeto.Controllers
             {
                 Id = created.Id,
                 Titulo = created.Titulo,
-                Descricao = created.Descricao
+                Descricao = created.Descricao,
+                AudioUrl = created.AudioUrl,
+                CapaUrl = created.CapaUrl
             };
 
             return Ok(createdDto);
         }
 
-        // 🔹 PUT - Atualizar podcast existente
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] PodcastDto dto)
         {
             if (dto == null || id != dto.Id)
                 return BadRequest("Dados inválidos para atualização.");
 
-            // Buscar o podcast existente
             var existing = await _supabase.Client
                 .From<Podcast>()
                 .Where(p => p.Id == id)
@@ -74,12 +76,12 @@ namespace MeuProjeto.Controllers
             if (existing == null)
                 return NotFound("Podcast não encontrado.");
 
-            // Atualizar os campos
             existing.Titulo = dto.Titulo;
             existing.Descricao = dto.Descricao;
+            existing.AudioUrl = dto.AudioUrl;
+            existing.CapaUrl = dto.CapaUrl;
 
             var result = await _supabase.Client.From<Podcast>().Update(existing);
-
             var updated = result.Models.FirstOrDefault();
             if (updated == null) return BadRequest("Erro ao atualizar o podcast.");
 
@@ -87,13 +89,14 @@ namespace MeuProjeto.Controllers
             {
                 Id = updated.Id,
                 Titulo = updated.Titulo,
-                Descricao = updated.Descricao
+                Descricao = updated.Descricao,
+                AudioUrl = updated.AudioUrl,
+                CapaUrl = updated.CapaUrl
             };
 
             return Ok(updatedDto);
         }
 
-        // 🔹 DELETE - Remover podcast
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -107,7 +110,50 @@ namespace MeuProjeto.Controllers
 
             await _supabase.Client.From<Podcast>().Delete(existing);
 
-            return Ok("Podcast excluído com sucesso!"); // 204
+            return Ok("Podcast excluído com sucesso!");
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadPodcast(
+            IFormFile audio,
+            IFormFile? capa,
+            [FromForm] string titulo,
+            [FromForm] string descricao)
+        {
+            if (audio == null) return BadRequest("O áudio é obrigatório!");
+
+            // Upload de arquivos
+            var audioUrl = await _supabase.UploadFileAsync(audio, "podcasts", "audios");
+            string? capaUrl = null;
+            if (capa != null)
+                capaUrl = await _supabase.UploadFileAsync(capa, "podcasts", "capas");
+
+            // Criar podcast no banco
+            var podcast = new Podcast
+            {
+                Titulo = titulo,
+                Descricao = descricao,
+                AudioUrl = audioUrl,
+                CapaUrl = capaUrl
+            };
+
+            var result = await _supabase.Client.From<Podcast>().Insert(podcast);
+            var created = result.Models.FirstOrDefault();
+
+            if (created == null)
+                return BadRequest("Erro ao criar o podcast.");
+
+            // Retornar DTO para evitar problema de serialização
+            var createdDto = new PodcastDto
+            {
+                Id = created.Id,
+                Titulo = created.Titulo,
+                Descricao = created.Descricao,
+                AudioUrl = created.AudioUrl,
+                CapaUrl = created.CapaUrl
+            };
+
+            return Ok(createdDto);
         }
     }
 }
