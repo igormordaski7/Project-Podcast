@@ -3990,19 +3990,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Igor\\.nuget\\packages\\": {}
+    "C:\\Users\\igorm\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\ProjetoPodcast\\backend\\backend.csproj",
+      "projectUniqueName": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
       "projectName": "backend",
-      "projectPath": "C:\\ProjetoPodcast\\backend\\backend.csproj",
-      "packagesPath": "C:\\Users\\Igor\\.nuget\\packages\\",
-      "outputPath": "C:\\ProjetoPodcast\\backend\\obj\\",
+      "projectPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
+      "packagesPath": "C:\\Users\\igorm\\.nuget\\packages\\",
+      "outputPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Igor\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\igorm\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -4077,7 +4077,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
