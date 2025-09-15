@@ -108,52 +108,23 @@ namespace MeuProjeto.Controllers
             if (existing == null)
                 return NotFound("Podcast não encontrado.");
 
+            // Deletar arquivos do storage (se existirem)
+            if (!string.IsNullOrEmpty(existing.AudioUrl))
+            {
+                await _supabase.DeleteFileAsync(existing.AudioUrl, "podcasts");
+            }
+
+            if (!string.IsNullOrEmpty(existing.CapaUrl))
+            {
+                await _supabase.DeleteFileAsync(existing.CapaUrl, "podcasts");
+            }
+
+            // Deletar o registro do banco
             await _supabase.Client.From<Podcast>().Delete(existing);
 
-            return Ok("Podcast excluído com sucesso!");
+            return Ok("Podcast e arquivos excluídos com sucesso!");
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadPodcast(
-            IFormFile audio,
-            IFormFile? capa,
-            [FromForm] string titulo,
-            [FromForm] string descricao)
-        {
-            if (audio == null) return BadRequest("O áudio é obrigatório!");
 
-            // Upload de arquivos
-            var audioUrl = await _supabase.UploadFileAsync(audio, "podcasts", "audios");
-            string? capaUrl = null;
-            if (capa != null)
-                capaUrl = await _supabase.UploadFileAsync(capa, "podcasts", "capas");
-
-            // Criar podcast no banco
-            var podcast = new Podcast
-            {
-                Titulo = titulo,
-                Descricao = descricao,
-                AudioUrl = audioUrl,
-                CapaUrl = capaUrl
-            };
-
-            var result = await _supabase.Client.From<Podcast>().Insert(podcast);
-            var created = result.Models.FirstOrDefault();
-
-            if (created == null)
-                return BadRequest("Erro ao criar o podcast.");
-
-            // Retornar DTO para evitar problema de serialização
-            var createdDto = new PodcastDto
-            {
-                Id = created.Id,
-                Titulo = created.Titulo,
-                Descricao = created.Descricao,
-                AudioUrl = created.AudioUrl,
-                CapaUrl = created.CapaUrl
-            };
-
-            return Ok(createdDto);
-        }
     }
 }
