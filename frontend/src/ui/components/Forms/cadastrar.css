@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.form-card-container {
+    background-color: #aee8a5;
+    padding: 40px 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.form-card-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+}
+
+.form-card-container .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-card-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-card-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.form-card-container input[type="text"]:focus {
+    outline: none;
+    border-color: #79b379;
+}
+
+.form-card-container button {
+    background-color: #79b379;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.form-card-container button:hover {
+    background-color: #6a9e6a;
+}
+        
+.form-card-container .link-container {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.form-card-container .link-container a {
+    color: #555;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-card-container .link-container a:hover {
+    text-decoration: underline;
+}

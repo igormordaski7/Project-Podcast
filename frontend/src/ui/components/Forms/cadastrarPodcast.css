@@ -1,0 +1,129 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.main-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.form-card-container {
+    background-color: #aee8a5;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 450px;
+    box-sizing: border-box;
+}
+
+.form-card-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.form-card-container .form-group {
+    margin-bottom: 20px;
+}
+
+.form-card-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-card-container input[type="text"],
+.form-card-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.form-card-container input[type="text"]:focus,
+.form-card-container textarea:focus {
+    outline: none;
+    border-color: #79b379;
+}
+
+.form-card-container textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-card-container input[type="file"] {
+    display: none;
+}
+
+.file-btn {
+    display: inline-block;
+    background-color: #fff; 
+    color: #555;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.file-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.form-card-container button[type="submit"] {
+    background-color: #79b379;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.form-card-container button[type="submit"]:hover {
+    background-color: #6a9e6a;
+}
+
+.info-card-container {
+    background: linear-gradient(135deg, #e0f8e0, #aee8a5);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    box-sizing: border-box;
+}
+
+.info-card-container h2 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.info-card-container p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.image-placeholder img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
