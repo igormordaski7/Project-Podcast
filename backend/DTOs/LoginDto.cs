@@ -1,5 +1,5 @@
 public class LoginDto
-    {
-        public string Email { get; set; }
-        public string Senha { get; set; }
-    }
+{
+    public string Email { get; set; } = null!;
+    public string Senha { get; set; } = null!;
+}
