@@ -1,22 +1,6 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
-    "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj": {}
-  },
-  "projects": {
-    "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
-        "projectName": "backend",
-        "projectPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\igorm\\.nuget\\packages\\",
-        "outputPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\igorm\\AppData\\Roaming\\NuGet\\NuGet.Config"
-=======
     "C:\\Users\\User\\OneDrive\\Documentos\\TrabalhoPodcast\\Project-Podcast\\backend\\backend.csproj": {}
   },
   "projects": {
@@ -31,7 +15,6 @@
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -133,11 +116,7 @@
               "privateAssets": "all"
             }
           },
-<<<<<<< HEAD
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
-=======
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
         }
       }
     }

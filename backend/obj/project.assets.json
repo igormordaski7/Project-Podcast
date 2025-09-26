@@ -4150,25 +4150,11 @@
     ]
   },
   "packageFolders": {
-<<<<<<< HEAD
-    "C:\\Users\\igorm\\.nuget\\packages\\": {}
-=======
     "C:\\Users\\User\\.nuget\\packages\\": {}
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< HEAD
-      "projectUniqueName": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
-      "projectName": "backend",
-      "projectPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\backend.csproj",
-      "packagesPath": "C:\\Users\\igorm\\.nuget\\packages\\",
-      "outputPath": "C:\\ProjecPodcast\\Project-Podcast\\backend\\obj\\",
-      "projectStyle": "PackageReference",
-      "configFilePaths": [
-        "C:\\Users\\igorm\\AppData\\Roaming\\NuGet\\NuGet.Config"
-=======
       "projectUniqueName": "C:\\Users\\User\\OneDrive\\Documentos\\TrabalhoPodcast\\Project-Podcast\\backend\\backend.csproj",
       "projectName": "backend",
       "projectPath": "C:\\Users\\User\\OneDrive\\Documentos\\TrabalhoPodcast\\Project-Podcast\\backend\\backend.csproj",
@@ -4177,7 +4163,6 @@
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config"
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -4279,12 +4264,16 @@
             "privateAssets": "all"
           }
         },
-<<<<<<< HEAD
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
-=======
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\User\\OneDrive\\Documentos\\TrabalhoPodcast\\Project-Podcast\\backend\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

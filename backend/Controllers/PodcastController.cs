@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using MeuProjeto.Models;
 using MeuProjeto.Services;
+using Microsoft.AspNetCore.Authorization; // 1. Importe a autorização
 
 namespace MeuProjeto.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // 2. Adicione este atributo para proteger todos os métodos neste controller
     public class PodcastController : ControllerBase
     {
         private readonly SupabaseService _supabase;

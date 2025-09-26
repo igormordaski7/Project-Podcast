@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using MeuProjeto.Models;
 using MeuProjeto.Services;
+using BCrypt.Net; // 1. Importe o BCrypt
+using System.IdentityModel.Tokens.Jwt; // 2. Importe para JWT
+using System.Security.Claims; // 3. Importe para Claims
+using Microsoft.IdentityModel.Tokens; // 4. Importe para Tokens
+using System.Text; // 5. Importe para Encoding
 
 namespace MeuProjeto.Controllers
 {
@@ -9,10 +14,12 @@ namespace MeuProjeto.Controllers
     public class AuthController : ControllerBase
     {
         private readonly SupabaseService _supabase;
+        private readonly IConfiguration _configuration; // 6. Injete a configuração
 
-        public AuthController(SupabaseService supabase)
+        public AuthController(SupabaseService supabase, IConfiguration configuration)
         {
             _supabase = supabase;
+            _configuration = configuration; // 7. Atribua a configuração
         }
 
         [HttpPost("login")]
@@ -28,18 +35,51 @@ namespace MeuProjeto.Controllers
 
             var usuario = result.Models.FirstOrDefault();
 
-            if (usuario == null || usuario.Senha != dto.Senha)
+            // 8. Verifique o usuário e a senha com BCrypt
+            if (usuario == null || !BCrypt.Net.BCrypt.Verify(dto.Senha, usuario.Senha))
                 return Unauthorized("Credenciais inválidas.");
 
-            var usuarioDto = new UsuarioDto
+            // 9. Gere o Token JWT
+            var token = GenerateJwtToken(usuario);
+
+            // 10. Retorne o token e os dados do usuário
+            return Ok(new
             {
-                Id = usuario.Id,
-                Nome = usuario.Nome,
-                Turma = usuario.Turma,
-                Email = usuario.Email
+                Token = token,
+                Usuario = new UsuarioDto
+                {
+                    Id = usuario.Id,
+                    Nome = usuario.Nome,
+                    Turma = usuario.Turma,
+                    Email = usuario.Email
+                }
+            });
+        }
+
+        // 11. Método para gerar o token
+        private string GenerateJwtToken(Usuario usuario)
+        {
+            var jwtKey = _configuration["Jwt:Key"];
+            var jwtIssuer = _configuration["Jwt:Issuer"];
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("id", usuario.Id.ToString()) // Adiciona o ID do usuário ao token
             };
 
-            return Ok(usuarioDto);
+            var token = new JwtSecurityToken(
+                issuer: jwtIssuer,
+                audience: jwtIssuer,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(120), // Token expira em 2 horas
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

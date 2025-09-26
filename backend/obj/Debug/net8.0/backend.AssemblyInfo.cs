@@ -13,11 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6b3f2206528ad4b9298a4c50b4c0606753ad1c05")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+935101b8572f9e644baaab1dd0bc359dcfb23670")]
->>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1e979704b5e9b2ece727748e8d022f76c0b49b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
