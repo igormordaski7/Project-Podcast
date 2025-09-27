@@ -25,6 +25,27 @@ const NewsCarousel: React.FC = () => {
       subtitle: 'Subtitle 2',
       description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
       imageUrl: 'placeholder-news.png'
+    },
+    {
+      id: '3',
+      title: 'Title 2',
+      subtitle: 'Subtitle 2',
+      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
+      imageUrl: 'placeholder-news.png'
+    },
+    {
+      id: '4',
+      title: 'Title 2',
+      subtitle: 'Subtitle 2',
+      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
+      imageUrl: 'placeholder-news.png'
+    },
+    {
+      id: '5',
+      title: 'Title 2',
+      subtitle: 'Subtitle 2',
+      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
+      imageUrl: 'placeholder-news.png'
     }
   ];
 
@@ -38,7 +59,6 @@ const NewsCarousel: React.FC = () => {
       
       <div className="carousel-controls">
         <CarouselArrow direction="prev" />
-        <CarouselArrow direction="play" />
         <CarouselArrow direction="next" />
       </div>
     </div>
