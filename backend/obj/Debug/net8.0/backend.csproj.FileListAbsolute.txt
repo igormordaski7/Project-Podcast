@@ -468,3 +468,8 @@ C:\Users\User\OneDrive\Documentos\TrabalhoPodcast\Project-Podcast\backend\obj\De
 C:\Users\User\OneDrive\Documentos\TrabalhoPodcast\Project-Podcast\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 C:\Users\User\OneDrive\Documentos\TrabalhoPodcast\Project-Podcast\backend\obj\Debug\net8.0\ref\backend.dll
 >>>>>>> 0fabde7 (Atualiza backend com JWT, Supabase e AuthController)
+C:\ProjetoPodcast\backend\bin\Debug\net8.0\package-lock.json
+C:\ProjetoPodcast\backend\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\ProjetoPodcast\backend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\ProjetoPodcast\backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\ProjetoPodcast\backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll

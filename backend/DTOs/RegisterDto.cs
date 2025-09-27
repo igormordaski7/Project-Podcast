@@ -4,4 +4,5 @@ public class RegisterDto
     public string Senha { get; set; } = null!;
     public string Nome { get; set; } = null!;
     public string Turma { get; set; } = null!;
+    public string ConfirmarSenha { get; set; } = null!;
 }
