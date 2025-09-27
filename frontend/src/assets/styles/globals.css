@@ -104,14 +104,6 @@ img { display: block; max-width: 100%; }
   color: var(--olive);
 }
 
-.card {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  color: var(--text-dark);
-}
-
 .news-carousel .cards-row {
   display: flex;
   gap: var(--gap);
