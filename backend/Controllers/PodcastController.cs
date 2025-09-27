@@ -127,6 +127,47 @@ namespace MeuProjeto.Controllers
             return Ok("Podcast e arquivos excluídos com sucesso!");
         }
 
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadPodcast(
+            IFormFile audio,
+            IFormFile? capa,
+            [FromForm] string titulo,
+            [FromForm] string descricao)
+        {
+            if (audio == null) return BadRequest("O áudio é obrigatório!");
 
+            // Upload de arquivos
+            var audioUrl = await _supabase.UploadFileAsync(audio, "podcasts", "audios");
+            string? capaUrl = null;
+            if (capa != null)
+                capaUrl = await _supabase.UploadFileAsync(capa, "podcasts", "capas");
+
+            // Criar podcast no banco
+            var podcast = new Podcast
+            {
+                Titulo = titulo,
+                Descricao = descricao,
+                AudioUrl = audioUrl,
+                CapaUrl = capaUrl
+            };
+
+            var result = await _supabase.Client.From<Podcast>().Insert(podcast);
+            var created = result.Models.FirstOrDefault();
+
+            if (created == null)
+                return BadRequest("Erro ao criar o podcast.");
+
+            // Retornar DTO para evitar problema de serialização
+            var createdDto = new PodcastDto
+            {
+                Id = created.Id,
+                Titulo = created.Titulo,
+                Descricao = created.Descricao,
+                AudioUrl = created.AudioUrl,
+                CapaUrl = created.CapaUrl
+            };
+
+            return Ok(createdDto);
+        }
     }
 }
