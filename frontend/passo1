@@ -1,0 +1,444 @@
+Perfeito! Vamos estruturar esse frontend de forma modular e organizada, seguindo a arquitetura em camadas que você definiu. O objetivo é criar componentes reutilizáveis e bem separados, facilitando a manutenção e a integração com o back-end posteriormente.
+
+Como você vai usar o Gemini CLI para implementar, vou fornecer a estrutura de forma clara e passo a passo, explicando a responsabilidade de cada parte.
+
+---
+
+### **Passo 1: Estrutura de Pastas e Arquivos**
+
+Vamos criar a seguinte estrutura, refletindo a arquitetura em camadas:
+
+```plaintext
+src/
+├── app/
+│   ├── router/
+│   │   └── AppRouter.tsx          # Configuração das rotas
+│   ├── store/
+│   │   └── authStore.ts           # Estado global de autenticação (exemplo com Zustand)
+│   └── providers/
+│       └── AppProviders.tsx       # Providers de tema, roteamento, estado
+├── ui/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Header.tsx         # Componente Header com usuário e notificações
+│   │   │   ├── Menu.tsx           # Componente Menu (Notícias/Podcasts + Busca)
+│   │   │   └── CarouselControls.tsx # Controles de carrossel (setas)
+│   │   ├── news/
+│   │   │   └── NewsCard.tsx       # Card de notícias
+│   │   ├── podcasts/
+│   │   │   ├── PodcastCard.tsx    # Card de podcasts
+│   │   │   ├── ReproductionCard.tsx # Card de reprodução de áudio
+│   │   │   └── ReproductionMenu.tsx # Controles de reprodução (3 botões)
+│   │   └── forms/
+│   │       ├── LoginForm.tsx      # Formulário de login
+│   │       ├── RegisterForm.tsx   # Formulário de cadastro
+│   │       └── EditUserForm.tsx   # Formulário de edição de usuário
+│   ├── layouts/
+│   │   └── MainLayout.tsx         # Layout base com Header e fundo gradient
+│   └── pages/
+│       ├── HomePage.tsx           # Página inicial (NewsCard)
+│       ├── PodcastsPage.tsx       # Página de podcasts (PodcastCard)
+│       ├── PlayPodcastPage.tsx    # Página de reprodução
+│       ├── LoginPage.tsx          # Página de login
+│       ├── RegisterPage.tsx       # Página de cadastro
+│       └── EditUserPage.tsx       # Página de edição de usuário
+├── services/
+│   ├── http/
+│   │   └── apiClient.ts           # Configuração do Axios
+│   └── api/
+│       ├── authApi.ts             # Login, registro, logout
+│       ├── userApi.ts             # Buscar, editar usuário
+│       ├── newsApi.ts             # Buscar notícias
+│       └── podcastsApi.ts         # Buscar podcasts
+├── models/
+│   ├── user.ts                    # Interface User
+│   ├── news.ts                    # Interface News
+│   └── podcast.ts                 # Interface Podcast
+├── hooks/
+│   ├── useAuth.ts                 # Hook para autenticação
+│   ├── useNews.ts                 # Hook para buscar notícias
+│   └── usePodcasts.ts             # Hook para buscar podcasts
+├── utils/
+│   ├── constants.ts               # Cores, fontes, etc.
+│   └── helpers.ts                 # formataData, etc.
+└── assets/
+    ├── styles/
+    │   ├── globals.css            # Estilos globais e variáveis CSS
+    │   └── components.css         # Estilos específicos dos componentes
+    ├── images/
+    │   ├── IconUser.png
+    │   ├── IconBell.png
+    │   └── IconArrow.png
+    └── fonts/                     # (Se for usar fontes locais)
+```
+
+---
+
+### **Passo 2: Definição de Tipos (models/)**
+
+Vamos definir as interfaces principais em TypeScript.
+
+**`src/models/user.ts`**
+```typescript
+export interface User {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface LoginFormData {
+  username: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+export interface RegisterFormData {
+  name: string;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  rememberMe: boolean;
+}
+```
+
+**`src/models/news.ts`**
+```typescript
+export interface News {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+  date: string;
+}
+```
+
+**`src/models/podcast.ts`**
+```typescript
+export interface Podcast {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+  audioUrl: string;
+  duration: string;
+}
+```
+
+---
+
+### **Passo 3: Configuração Global (app/)**
+
+**`src/app/store/authStore.ts`** (exemplo com Zustand)
+```typescript
+import { create } from 'zustand';
+import { User } from '../../models/user';
+
+interface AuthState {
+  user: User | null;
+  isLoggedIn: boolean;
+  login: (user: User) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isLoggedIn: false,
+  login: (user) => set({ user, isLoggedIn: true }),
+  logout: () => set({ user: null, isLoggedIn: false }),
+}));
+```
+
+**`src/app/router/AppRouter.tsx`**
+```typescript
+import { Routes, Route } from 'react-router-dom';
+import { MainLayout } from '../../ui/layouts/MainLayout';
+import { HomePage } from '../../ui/pages/HomePage';
+import { PodcastsPage } from '../../ui/pages/PodcastsPage';
+import { PlayPodcastPage } from '../../ui/pages/PlayPodcastPage';
+import { LoginPage } from '../../ui/pages/LoginPage';
+import { RegisterPage } from '../../ui/pages/RegisterPage';
+import { EditUserPage } from '../../ui/pages/EditUserPage';
+
+export function AppRouter() {
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="podcasts" element={<PodcastsPage />} />
+        <Route path="play-podcast/:id" element={<PlayPodcastPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
+        <Route path="edit-user" element={<EditUserPage />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+---
+
+### **Passo 4: Componentes da UI (ui/components/)**
+
+Vou mostrar exemplos de componentes críticos para manter o estilo do PDF.
+
+**`src/ui/components/common/Header.tsx`**
+```typescript
+import { useState } from 'react';
+import { useAuthStore } from '../../../app/store/authStore';
+
+export function Header() {
+  const { user, isLoggedIn, logout } = useAuthStore();
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  return (
+    <header className="app-header">
+      <div className="left">
+        <div className="user-wrap">
+          <button className="icon-btn" onClick={() => setUserDropdownOpen(!userDropdownOpen)}>
+            <img src="/assets/images/IconUser.png" alt="Usuário" />
+          </button>
+          {userDropdownOpen && (
+            <div className="dropdown user-dropdown">
+              {isLoggedIn ? (
+                <>
+                  <a href="/edit-user">Configurações</a>
+                  <button onClick={logout}>Logoff</button>
+                </>
+              ) : (
+                <a href="/login">Acessar</a>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="notifications">
+        <button className="icon-btn" onClick={() => setNotificationsOpen(!notificationsOpen)}>
+          <img src="/assets/images/IconBell.png" alt="Notificações" />
+        </button>
+        {notificationsOpen && (
+          <div className="dropdown">
+            <div>Notificações</div>
+            {/* Lista de notificações */}
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+```
+
+**`src/ui/components/common/Menu.tsx`**
+```typescript
+import { useLocation } from 'react-router-dom';
+
+export function Menu() {
+  const location = useLocation();
+
+  return (
+    <div className="menu-row">
+      <a
+        href="/"
+        className={`pill ${location.pathname === '/' ? 'selected' : 'unselected'}`}
+      >
+        Notícias
+      </a>
+      <a
+        href="/podcasts"
+        className={`pill ${location.pathname === '/podcasts' ? 'selected' : 'unselected'}`}
+      >
+        Podcasts
+      </a>
+      <div className="search">
+        <button>☰</button>
+        <input placeholder="Hinted search text" />
+        <button>🔍</button>
+      </div>
+    </div>
+  );
+}
+```
+
+**`src/ui/components/podcasts/PodcastCard.tsx`**
+```typescript
+import { Podcast } from '../../../models/podcast';
+
+interface PodcastCardProps {
+  podcast: Podcast;
+}
+
+export function PodcastCard({ podcast }: PodcastCardProps) {
+  return (
+    <article className="card">
+      <div className="card-media">
+        <img src={podcast.imageUrl} alt={podcast.title} />
+      </div>
+      <div className="card-body">
+        <div className="card-header">
+          <div>
+            <div className="card-title">{podcast.title}</div>
+            <div className="card-sub">{podcast.subtitle}</div>
+          </div>
+          <div>⋮</div>
+        </div>
+        <p className="card-desc">{podcast.description}</p>
+        <a href={`/play-podcast/${podcast.id}`} className="play-pill">Ouvir</a>
+      </div>
+    </article>
+  );
+}
+```
+
+---
+
+### **Passo 5: Páginas (ui/pages/)**
+
+**`src/ui/pages/HomePage.tsx`**
+```typescript
+import { useNews } from '../../hooks/useNews';
+import { NewsCard } from '../components/news/NewsCard';
+import { useAuthStore } from '../../app/store/authStore';
+
+export function HomePage() {
+  const { user } = useAuthStore();
+  const { news, loading } = useNews();
+
+  return (
+    <section className="screen">
+      <h1 className="hero-title">
+        Olá <span className="username">{user?.name || 'Fulano'}</span>, seja bem-vindo de volta!<br />
+        Confira nossas últimas notícias e PodCasts!
+      </h1>
+      <Menu />
+      <div className="cards-row">
+        {news.slice(0, 2).map((item) => (
+          <NewsCard key={item.id} news={item} />
+        ))}
+      </div>
+      <CarouselControls />
+    </section>
+  );
+}
+```
+
+---
+
+### **Passo 6: Serviços (services/)**
+
+**`src/services/http/apiClient.ts`**
+```typescript
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+```
+
+**`src/services/api/newsApi.ts`**
+```typescript
+import { apiClient } from '../http/apiClient';
+import { News } from '../../models/news';
+
+export const newsApi = {
+  getNews: async (): Promise<News[]> => {
+    const response = await apiClient.get<News[]>('/news');
+    return response.data;
+  },
+};
+```
+
+---
+
+### **Passo 7: Estilos (assets/styles/)**
+
+**`src/assets/styles/globals.css`**
+```css
+:root {
+  --olive: #555C34;
+  --purple: #6750A4;
+  --white: #FFFFFF;
+  --bg-left: #c8d891;
+  --bg-right: #f6eef1;
+  --card-bg: #ffffff;
+  --text-dark: #222;
+}
+
+body {
+  background: linear-gradient(180deg, var(--bg-left) 0 32%, var(--bg-right) 32% 100%);
+  font-family: 'Roboto', sans-serif;
+}
+
+.hero-title {
+  font-family: 'Abhaya Libre', serif;
+  font-weight: 800;
+  color: var(--white);
+}
+
+.hero-title .username {
+  color: var(--olive);
+}
+
+.pill.selected {
+  background: var(--olive);
+  color: var(--white);
+}
+
+.pill.unselected {
+  background: var(--white);
+  color: var(--olive);
+}
+```
+
+---
+
+### **Passo 8: Hook Customizado (hooks/)**
+
+**`src/hooks/useNews.ts`**
+```typescript
+import { useState, useEffect } from 'react';
+import { newsApi } from '../services/api/newsApi';
+import { News } from '../models/news';
+
+export function useNews() {
+  const [news, setNews] = useState<News[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const data = await newsApi.getNews();
+        setNews(data);
+      } catch (error) {
+        console.error('Erro ao buscar notícias:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  return { news, loading };
+}
+```
+
+---
+
+### **Resumo para o Gemini CLI:**
+
+1.  **Crie a estrutura de pastas** como definida acima.
+2.  **Implemente os modelos (models/)** com as interfaces TypeScript.
+3.  **Configure o store global (app/store/)** para gerenciar o estado de autenticação.
+4.  **Crie os serviços (services/)** para comunicação com a API.
+5.  **Desenvolva os componentes UI (ui/components/)** de forma modular, reutilizando estilos.
+6.  **Monte as páginas (ui/pages/)** combinando os componentes.
+7.  **Configure o roteamento (app/router/)** para navegação.
+8.  **Aplique os estilos CSS** mantendo a identidade visual do PDF.
+
+Cada componente deve ser independente, recebendo dados via props ou hooks. Os serviços abstraem a lógica de API, e o store gerencia o estado global (como o usuário logado).
+Quer que eu detalhe mais algum componente específico ou a parte de roteamento?

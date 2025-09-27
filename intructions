@@ -1,0 +1,492 @@
+Estrutura de Pastas:
+
+src/
+├── app/
+│   ├── router/
+│   │   └── AppRouter.tsx
+│   └── providers/
+│       └── AppProvider.tsx
+├── ui/
+│   ├── components/
+│   │   ├── Header/
+│   │   │   ├── Header.tsx
+│   │   │   ├── UserDropdown.tsx
+│   │   │   └── NotificationDropdown.tsx
+│   │   ├── Menu/
+│   │   │   └── Menu.tsx
+│   │   ├── News/
+│   │   │   ├── NewsCarousel.tsx
+│   │   │   └── NewsCard.tsx
+│   │   ├── Podcast/
+│   │   │   ├── PodcastCarousel.tsx
+│   │   │   └── PodcastCard.tsx
+│   │   ├── Player/
+│   │   │   ├── PlayerCard.tsx
+│   │   │   └── MiniPlayer.tsx
+│   │   └── common/
+│   │       ├── Card.tsx
+│   │       └── CarouselArrow.tsx
+│   ├── layouts/
+│   │   └── MainLayout.tsx
+│   ├── pages/
+│   │   ├── HomePage.tsx
+│   │   ├── PodcastPage.tsx
+│   │   ├── PlaybackPage.tsx
+│   │   └── auth/
+│   │       ├── LoginPage.tsx
+│   │       ├── RegisterPage.tsx
+│   │       └── EditUserPage.tsx
+│   └── styles/
+│       └── globals.css
+├── models/
+│   └── user.ts
+├── hooks/
+│   ├── useAuth.ts
+│   └── useNavigation.ts
+├── utils/
+│   └── constants.ts
+└── assets/
+    ├── styles/
+    │   └── globals.css
+    └── images/
+        ├── icon-user.png
+        ├── icon-bell.png
+        └── icon-arrow.png
+        
+Arquivos Principais
+1. models/user.ts
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  isLoggedIn: boolean;
+}
+
+export interface AuthFormData {
+  name?: string;
+  username: string;
+  email?: string;
+  password: string;
+  confirmPassword?: string;
+  rememberMe: boolean;
+}
+
+2. utils/constants.ts
+export const COLORS = {
+  olive: '#555C34',
+  purple: '#6750A4',
+  white: '#FFFFFF',
+  bgLeft: '#c8d891',
+  bgRight: '#f6eef1',
+  cardBg: '#ffffff',
+  textDark: '#222'
+};
+
+export const FONTS = {
+  abhaya: '"Abhaya Libre", serif',
+  roboto: '"Roboto", Arial, sans-serif'
+};
+
+3. hooks/useAuth.ts
+import { useState } from 'react';
+import { User, AuthFormData } from '../models/user';
+
+export const useAuth = () => {
+  const [user, setUser] = useState<User>({
+    id: '1',
+    name: 'Fulano',
+    email: 'fulano@email.com',
+    username: 'fulano',
+    isLoggedIn: true
+  });
+
+  const login = (credentials: AuthFormData) => {
+    setUser(prev => ({ ...prev, isLoggedIn: true }));
+  };
+
+  const logout = () => {
+    setUser(prev => ({ ...prev, isLoggedIn: false }));
+  };
+
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prev => ({ ...prev, ...userData }));
+  };
+
+  return { user, login, logout, updateUser };
+};
+
+4. hooks/useNavigation.ts
+import { useState } from 'react';
+
+export type Page = 'home' | 'podcasts' | 'playback';
+
+export const useNavigation = () => {
+  const [currentPage, setCurrentPage] = useState<Page>('home');
+
+  const navigateTo = (page: Page) => {
+    setCurrentPage(page);
+  };
+
+  return { currentPage, navigateTo };
+};
+
+5. ui/components/Header/Header.tsx
+import React from 'react';
+import UserDropdown from './UserDropdown';
+import NotificationDropdown from './NotificationDropdown';
+
+const Header: React.FC = () => {
+  return (
+    <header className="app-header" aria-label="App header">
+      <div className="left">
+        <UserDropdown />
+      </div>
+      <div className="header-right">
+        <NotificationDropdown />
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+
+6. ui/components/Header/UserDropdown.tsx
+import React, { useState } from 'react';
+import { useAuth } from '../../../hooks/useAuth';
+
+const UserDropdown: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
+
+  return (
+    <div className="user-wrap">
+      <button 
+        className="icon-btn" 
+        onClick={toggleDropdown}
+        aria-haspopup="true" 
+        aria-expanded={isOpen}
+        title="Usuário"
+      >
+        <img src="/assets/images/icon-user.png" alt="Usuário" />
+      </button>
+      
+      <div className={`dropdown user-dropdown ${isOpen ? 'show' : ''}`}>
+        {user.isLoggedIn ? (
+          <>
+            <a href="#">Configurações</a>
+            <a href="#" onClick={logout}>Logoff</a>
+          </>
+        ) : (
+          <a href="#">Acessar</a>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default UserDropdown;
+
+7. ui/components/Menu/Menu.tsx
+import React from 'react';
+import { useNavigation } from '../../../hooks/useNavigation';
+
+const Menu: React.FC = () => {
+  const { currentPage, navigateTo } = useNavigation();
+
+  return (
+    <div className="menu-row">
+      <div 
+        className={`pill ${currentPage === 'home' ? 'selected' : 'unselected'}`}
+        onClick={() => navigateTo('home')}
+      >
+        Notícias
+      </div>
+      <div 
+        className={`pill ${currentPage === 'podcasts' ? 'selected' : 'unselected'}`}
+        onClick={() => navigateTo('podcasts')}
+      >
+        Podcasts
+      </div>
+
+      <div className="search">
+        <button aria-hidden="true">☰</button>
+        <input placeholder="Hinted search text" aria-label="Buscar" />
+        <button aria-hidden="true">🔍</button>
+      </div>
+    </div>
+  );
+};
+
+export default Menu;
+
+8. ui/components/News/NewsCarousel.tsx
+import React from 'react';
+import NewsCard from './NewsCard';
+import CarouselArrow from '../common/CarouselArrow';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  imageUrl: string;
+}
+
+const NewsCarousel: React.FC = () => {
+  const newsItems: NewsItem[] = [
+    {
+      id: '1',
+      title: 'Title 1',
+      subtitle: 'Subtitle 1',
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+      imageUrl: 'placeholder-news.png'
+    },
+    {
+      id: '2',
+      title: 'Title 2',
+      subtitle: 'Subtitle 2',
+      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
+      imageUrl: 'placeholder-news.png'
+    }
+  ];
+
+  return (
+    <div className="news-carousel">
+      <div className="cards-row">
+        {newsItems.map((item) => (
+          <NewsCard key={item.id} item={item} />
+        ))}
+      </div>
+      
+      <div className="carousel-controls">
+        <CarouselArrow direction="prev" />
+        <CarouselArrow direction="play" />
+        <CarouselArrow direction="next" />
+      </div>
+    </div>
+  );
+};
+
+export default NewsCarousel;
+
+9. ui/pages/HomePage.tsx
+import React from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import Menu from '../components/Menu/Menu';
+import NewsCarousel from '../components/News/NewsCarousel';
+
+const HomePage: React.FC = () => {
+  const { user } = useAuth();
+
+  return (
+    <section className="screen" id="homeScreen">
+      <h1 className="hero-title">
+        Olá <span className="username">{user.name}</span>, seja bem vindo de volta!<br/>
+        Confira nossas últimas notícias e PodCasts!
+      </h1>
+
+      <Menu />
+      <NewsCarousel />
+    </section>
+  );
+};
+
+export default HomePage;
+
+10. app/router/AppRouter.tsx
+import React from 'react';
+import { useNavigation } from '../../hooks/useNavigation';
+import HomePage from '../../ui/pages/HomePage';
+import PodcastPage from '../../ui/pages/PodcastPage';
+import PlaybackPage from '../../ui/pages/PlaybackPage';
+import MainLayout from '../../ui/layouts/MainLayout';
+
+const AppRouter: React.FC = () => {
+  const { currentPage } = useNavigation();
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <HomePage />;
+      case 'podcasts':
+        return <PodcastPage />;
+      case 'playback':
+        return <PlaybackPage />;
+      default:
+        return <HomePage />;
+    }
+  };
+
+  return <MainLayout>{renderPage()}</MainLayout>;
+};
+
+export default AppRouter;
+
+11. ui/layouts/MainLayout.tsx
+import React from 'react';
+import Header from '../components/Header/Header';
+
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  return (
+    <div className="page">
+      <Header />
+      {children}
+    </div>
+  );
+};
+
+export default MainLayout;
+
+12. assets/styles/globals.css
+/* ========================
+   Variáveis / Tokens
+   ======================== */
+:root {
+  --olive: #555C34;
+  --purple: #6750A4;
+  --white: #FFFFFF;
+  --bg-left: #c8d891;
+  --bg-right: #f6eef1;
+  --card-bg: #ffffff;
+  --text-dark: #222;
+  --gap: 24px;
+}
+
+/* Reset */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-left) 0 32%, var(--bg-right) 32% 100%);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+/* Header Styles */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 36px; height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.dropdown {
+  position: absolute;
+  top: 46px;
+  background: var(--card-bg);
+  border-radius: 6px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  padding: 8px;
+  min-width: 160px;
+  display: none;
+  z-index: 40;
+}
+
+.dropdown.show { display: block; }
+
+/* Menu Styles */
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0 28px;
+}
+
+.pill {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Abhaya Libre', serif;
+  font-weight: 800;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+
+.pill.selected {
+  background: var(--olive);
+  color: var(--white);
+}
+
+.pill.unselected {
+  background: var(--white);
+  color: var(--olive);
+}
+
+/* Add all other CSS styles from your original file here */
+/* ... rest of your CSS ... */
+
+13. main.tsx (Entry Point)
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './assets/styles/globals.css';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+14. App.tsx
+import React from 'react';
+import { AppProvider } from './app/providers/AppProvider';
+import AppRouter from './app/router/AppRouter';
+
+const App: React.FC = () => {
+  return (
+    <AppProvider>
+      <AppRouter />
+    </AppProvider>
+  );
+};
+
+export default App;
+
+15. app/providers/AppProvider.tsx
+import React from 'react';
+import { AuthProvider } from '../../hooks/useAuth';
+import { NavigationProvider } from '../../hooks/useNavigation';
+
+interface AppProviderProps {
+  children: React.ReactNode;
+}
+
+export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
+  return (
+    <AuthProvider>
+      <NavigationProvider>
+        {children}
+      </NavigationProvider>
+    </AuthProvider>
+  );
+};
+
+
