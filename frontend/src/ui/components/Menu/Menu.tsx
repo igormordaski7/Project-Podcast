@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigation } from '../../../hooks/useNavigation';
+import SearchBar from './SearchBar';
 
 const Menu: React.FC = () => {
   const { currentPage, navigateTo } = useNavigation();
@@ -19,11 +20,7 @@ const Menu: React.FC = () => {
         Podcasts
       </div>
 
-      <div className="search">
-        <button aria-hidden="true">☰</button>
-        <input placeholder="Hinted search text" aria-label="Buscar" />
-        <button aria-hidden="true">🔍</button>
-      </div>
+      <SearchBar />
     </div>
   );
 };
