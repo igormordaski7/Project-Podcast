@@ -1,5 +1,6 @@
 import React from 'react';
 import bellIcon from '../../../assets/images/icon-bell.png';
+import './Header.css';
 
 const NotificationDropdown: React.FC = () => {
   return (
