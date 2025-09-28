@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
+import userIcon from '../../../assets/images/icon-user.png';
 
 const UserDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ const UserDropdown: React.FC = () => {
         aria-expanded={isOpen}
         title="Usuário"
       >
-        <img src="/assets/images/icon-user.png" alt="Usuário" />
+        <img src={userIcon} alt="Usuário" />
       </button>
       
       <div className={`dropdown user-dropdown ${isOpen ? 'show' : ''}`}>

@@ -1,10 +1,11 @@
 import React from 'react';
+import bellIcon from '../../../assets/images/icon-bell.png';
 
 const NotificationDropdown: React.FC = () => {
   return (
     <div className="notification-wrap">
       <button className="icon-btn" title="Notificações">
-        <img src="/assets/images/icon-bell.png" alt="Notificações" />
+        <img src={bellIcon} alt="Notificações" />
       </button>
     </div>
   );
