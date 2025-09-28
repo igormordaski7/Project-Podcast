@@ -2,6 +2,7 @@ import React from 'react';
 import PlayerCard from '../components/Player/PlayerCard';
 import { useAuth } from '../../hooks/useAuth';
 import Menu from '../components/Menu/Menu';
+import MiniPlayer from '../components/Player/MiniPlayer';
 
 const PlaybackPage: React.FC = () => {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ const PlaybackPage: React.FC = () => {
         subtitle={currentlyPlaying.subtitle}
         imageUrl={currentlyPlaying.imageUrl}
       />
+      <MiniPlayer />
     </section>
   );
 };
