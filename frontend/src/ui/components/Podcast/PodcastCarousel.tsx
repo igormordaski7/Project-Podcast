@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import PodcastCard from './PodcastCard';
 import FancyCarouselArrow from '../common/FancyCarouselArrow';
 import './PodcastCarousel.css';
+import { useNavigation } from '../../../hooks/useNavigation';
 
 interface PodcastItem {
   id: string;
@@ -12,6 +13,7 @@ interface PodcastItem {
 }
 
 const PodcastCarousel: React.FC = () => {
+  const { navigateTo } = useNavigation();
   const podcastItems: PodcastItem[] = [
     {
       id: '1',
@@ -80,8 +82,7 @@ const PodcastCarousel: React.FC = () => {
 
   const handlePodcastButtonClick = (podcastId: string) => {
     console.log(`Reproduzindo podcast: ${podcastId}`);
-    // Aqui você pode adicionar a lógica para reproduzir o podcast
-    // Por exemplo: abrir player, iniciar áudio, etc.
+    navigateTo('playback');
   };
 
   return (
