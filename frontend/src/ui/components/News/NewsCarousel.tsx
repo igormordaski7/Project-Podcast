@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import NewsCard from './NewsCard';
 import FancyCarouselArrow from '../common/FancyCarouselArrow';
+import './NewsCarousel.css';
 
 interface NewsItem {
   id: string;
@@ -67,7 +68,8 @@ const NewsCarousel: React.FC = () => {
 
   const handleScroll = (direction: 'prev' | 'next') => {
     if (scrollRef.current) {
-      const scrollAmount = 324; // card width (300) + gap (24)
+      const containerWidth = scrollRef.current.offsetWidth;
+      const scrollAmount = containerWidth / 2;
       if (direction === 'next') {
         scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
       } else {

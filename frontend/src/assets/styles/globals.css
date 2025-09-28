@@ -103,17 +103,3 @@ img { display: block; max-width: 100%; }
 .hero-title .username {
   color: var(--olive);
 }
-
-.news-carousel .cards-row {
-  display: flex;
-  gap: var(--gap);
-  overflow-x: auto;
-}
-
-.carousel-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-}
-
