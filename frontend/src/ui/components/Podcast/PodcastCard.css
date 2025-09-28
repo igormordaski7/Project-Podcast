@@ -33,6 +33,10 @@
   opacity: 0;
   transform: translateY(20%);
   transition: 0.5s;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
 }
 
 /*Text*/
@@ -47,17 +51,7 @@
   margin: 5px 0 15px 0;
 }
 
-/*Button*/
-.card-button {
-  padding: 0.6rem;
-  outline: none;
-  border: none;
-  border-radius: 4px;
-  background: #ee9ca7;
-  color: white;
-  font-weight: bold;
-  transition: 0.4s ease;
-}
+
 
 /*Image*/
 .card-img {
@@ -85,9 +79,4 @@
 .card:hover .card-info {
   opacity: 1;
   transform: translateY(0);
-}
-
-.card-button:hover {
-  background: rgba(218, 77, 77, 0.4);
-  color: #f5f5f5;
 }
