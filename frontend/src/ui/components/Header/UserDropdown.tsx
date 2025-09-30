@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
+import userIcon from '../../../assets/images/icon-user.png';
+import { useNavigation } from '../../../hooks/useNavigation';
+import './Header.css';
 
 const UserDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { navigateTo } = useNavigation();
 
   const toggleDropdown = () => setIsOpen(!isOpen);
+
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigateTo('login');
+  };
 
   return (
     <div className="user-wrap">
@@ -16,7 +25,7 @@ const UserDropdown: React.FC = () => {
         aria-expanded={isOpen}
         title="Usuário"
       >
-        <img src="/assets/images/icon-user.png" alt="Usuário" />
+        <img src={userIcon} alt="Usuário" />
       </button>
       
       <div className={`dropdown user-dropdown ${isOpen ? 'show' : ''}`}>
@@ -26,7 +35,7 @@ const UserDropdown: React.FC = () => {
             <a href="#" onClick={logout}>Logoff</a>
           </>
         ) : (
-          <a href="#">Acessar</a>
+          <a href="#" onClick={handleLoginClick}>Acessar</a>
         )}
       </div>
     </div>

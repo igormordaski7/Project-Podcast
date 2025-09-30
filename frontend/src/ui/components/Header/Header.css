@@ -1,0 +1,65 @@
+/* /frontend/src/ui/components/Header/Header.css */
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 1px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-btn:focus {
+  outline: 2px solid #826E8C;
+  outline-offset: 2px;
+}
+
+.icon-btn img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain; /* Ensures the image fits within the content box while maintaining its aspect ratio */
+}
+
+.user-wrap,
+.notification-wrap {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  margin-top: 8px;
+  min-width: 160px;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+}
+
+.dropdown.show {
+  display: flex;
+}
+
+.dropdown a {
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown a:hover {
+  background-color: #f5f5f5;
+}
