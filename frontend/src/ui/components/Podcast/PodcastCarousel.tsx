@@ -1,71 +1,13 @@
 import React, { useRef } from 'react';
-import PodcastCard from './PodcastCard';
+import PodcastCard, { type PodcastItem } from './PodcastCard';
 import FancyCarouselArrow from '../common/FancyCarouselArrow';
 import './PodcastCarousel.css';
 import { useNavigation } from '../../../hooks/useNavigation';
-
-interface PodcastItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  imageUrl: string;
-}
+import { usePodcasts } from '../../../hooks/usePodcasts';
 
 const PodcastCarousel: React.FC = () => {
   const { navigateTo } = useNavigation();
-  const podcastItems: PodcastItem[] = [
-    {
-      id: '1',
-      title: 'Podcast 1',
-      subtitle: 'Episódio 1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '2',
-      title: 'Podcast 2',
-      subtitle: 'Episódio 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '3',
-      title: 'Podcast 3',
-      subtitle: 'Episódio 3',
-      description: 'Ut enim ad minim veniam, quis nostrud exercitation',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '4',
-      title: 'Podcast 4',
-      subtitle: 'Episódio 4',
-      description: 'Duis aute irure dolor in reprehenderit in voluptate',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '5',
-      title: 'Podcast 5',
-      subtitle: 'Episódio 5',
-      description: 'Excepteur sint occaecat cupidatat non proident',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '6',
-      title: 'Podcast 6',
-      subtitle: 'Episódio 6',
-      description: 'Sunt in culpa qui officia deserunt mollit anim',
-      imageUrl: 'placeholder-podcast.png'
-    },
-    {
-      id: '7',
-      title: 'Podcast 7',
-      subtitle: 'Episódio 7',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-podcast.png'
-    }
-  ];
-
+  const { podcasts, loading, error } = usePodcasts();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (direction: 'prev' | 'next') => {
@@ -80,28 +22,64 @@ const PodcastCarousel: React.FC = () => {
     }
   };
 
-  const handlePodcastButtonClick = (podcastId: string) => {
-    console.log(`Reproduzindo podcast: ${podcastId}`);
+  const handlePodcastButtonClick = (podcast: PodcastItem) => {
+    console.log(`Reproduzindo podcast: ${podcast.titulo}`, podcast);
+    // Aqui você pode salvar o podcast selecionado no contexto ou localStorage
+    // para usar na página de playback
+    localStorage.setItem('currentPodcast', JSON.stringify(podcast));
     navigateTo('playback');
   };
 
+  // Estados de loading e erro
+  if (loading) {
+    return (
+      <div className="podcast-carousel">
+        <div className="loading-state">
+          <p>Carregando podcasts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="podcast-carousel">
+        <div className="error-state">
+          <p>Erro ao carregar podcasts: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (podcasts.length === 0) {
+    return (
+      <div className="podcast-carousel">
+        <div className="empty-state">
+          <p>Nenhum podcast disponível no momento.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="news-carousel">
+    <div className="podcast-carousel">
       <div className="cards-row" ref={scrollRef}>
-        {podcastItems.map((item) => (
+        {podcasts.map((item) => (
           <PodcastCard 
             key={item.id} 
             item={item}
-            onButtonClick={() => handlePodcastButtonClick(item.id)}
+            onButtonClick={() => handlePodcastButtonClick(item)}
             buttonText="Ouvir"
           />
         ))}
       </div>
       
-      <div className="carousel-controls">
-        <FancyCarouselArrow direction="prev" onClick={() => handleScroll('prev')} />
-        <FancyCarouselArrow direction="next" onClick={() => handleScroll('next')} />
-      </div>
+      {podcasts.length > 2 && (
+        <div className="carousel-controls">
+          <FancyCarouselArrow direction="prev" onClick={() => handleScroll('prev')} />
+          <FancyCarouselArrow direction="next" onClick={() => handleScroll('next')} />
+        </div>
+      )}
     </div>
   );
 };

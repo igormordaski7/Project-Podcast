@@ -5,12 +5,14 @@ import PodcastCarousel from '../components/Podcast/PodcastCarousel';
 
 const PodcastPage: React.FC = () => {
   const { user } = useAuth();
+  
+  const userName = user?.name || 'Visitante';
 
   return (
-    <section className="screen" id="homeScreen">
+    <section className="screen" id="podcastScreen">
       <h1 className="hero-title">
-        Olá <span className="username">{user.name}</span>, seja bem vindo de volta!<br/>
-        Confira nossas últimas notícias e PodCasts!
+        Olá <span className="username">{userName}</span>, seja bem vindo de volta!<br/>
+        Confira nossos podcasts exclusivos!
       </h1>
 
       <Menu />
