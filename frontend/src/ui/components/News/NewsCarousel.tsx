@@ -1,69 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import NewsCard from './NewsCard';
 import FancyCarouselArrow from '../common/FancyCarouselArrow';
 import './NewsCarousel.css';
-
-interface NewsItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  imageUrl: string;
-}
+import { useNews } from '../../../hooks/useNews';
 
 const NewsCarousel: React.FC = () => {
-  const newsItems: NewsItem[] = [
-    {
-      id: '1',
-      title: 'Title 1',
-      subtitle: 'Subtitle 1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '2',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '3',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '4',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '5',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '6',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    },
-    {
-      id: '7',
-      title: 'Title 2',
-      subtitle: 'Subtitle 2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore',
-      imageUrl: 'placeholder-news.png'
-    }
-  ];
-
+  const { news, loading, error } = useNews();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = (direction: 'prev' | 'next') => {
@@ -78,18 +20,51 @@ const NewsCarousel: React.FC = () => {
     }
   };
 
+  // Se não há notícias, mostrar estado vazio
+  if (loading) {
+    return (
+      <div className="news-carousel">
+        <div className="loading-state">
+          <p>Carregando notícias...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="news-carousel">
+        <div className="error-state">
+          <p>Erro ao carregar notícias: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (news.length === 0) {
+    return (
+      <div className="news-carousel">
+        <div className="empty-state">
+          <p>Nenhuma notícia disponível no momento.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="news-carousel">
       <div className="cards-row" ref={scrollRef}>
-        {newsItems.map((item) => (
+        {news.map((item) => (
           <NewsCard key={item.id} item={item} />
         ))}
       </div>
       
-      <div className="carousel-controls">
-        <FancyCarouselArrow direction="prev" onClick={() => handleScroll('prev')} />
-        <FancyCarouselArrow direction="next" onClick={() => handleScroll('next')} />
-      </div>
+      {news.length > 2 && (
+        <div className="carousel-controls">
+          <FancyCarouselArrow direction="prev" onClick={() => handleScroll('prev')} />
+          <FancyCarouselArrow direction="next" onClick={() => handleScroll('next')} />
+        </div>
+      )}
     </div>
   );
 };
