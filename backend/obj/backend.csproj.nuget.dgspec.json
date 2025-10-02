@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\ProjetoPodcast\\backend\\backend.csproj": {}
+    "/home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/backend/backend.csproj": {}
   },
   "projects": {
-    "C:\\ProjetoPodcast\\backend\\backend.csproj": {
+    "/home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/backend/backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\ProjetoPodcast\\backend\\backend.csproj",
+        "projectUniqueName": "/home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/backend/backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\ProjetoPodcast\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\Igor\\.nuget\\packages\\",
-        "outputPath": "C:\\ProjetoPodcast\\backend\\obj\\",
+        "projectPath": "/home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/backend/backend.csproj",
+        "packagesPath": "/home/rafael/.nuget/packages/",
+        "outputPath": "/home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Igor\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/rafael/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,17 +32,20 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "BCrypt.Net-Next": {
+              "target": "Package",
+              "version": "[4.0.3, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.19, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.8, )"
@@ -89,7 +92,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/var/snap/dotnet/common/dotnet/sdk/8.0.120/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

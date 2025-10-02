@@ -13,7 +13,14 @@ const UserDropdown: React.FC = () => {
 
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    setIsOpen(false);
     navigateTo('login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    navigateTo('home');
   };
 
   return (
@@ -29,10 +36,14 @@ const UserDropdown: React.FC = () => {
       </button>
       
       <div className={`dropdown user-dropdown ${isOpen ? 'show' : ''}`}>
-        {user.isLoggedIn ? (
+        {user?.isLoggedIn ? (
           <>
+            <div className="user-info">
+              <span>Olá, {user.name}</span>
+              <small>{user.email}</small>
+            </div>
             <a href="#">Configurações</a>
-            <a href="#" onClick={logout}>Logoff</a>
+            <a href="#" onClick={handleLogout}>Logoff</a>
           </>
         ) : (
           <a href="#" onClick={handleLoginClick}>Acessar</a>

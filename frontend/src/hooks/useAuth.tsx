@@ -1,11 +1,13 @@
-import React, { useState, createContext, useContext, ReactNode } from 'react';
+import React, { useState, createContext, useContext, type ReactNode } from 'react';
 import type { User, AuthFormData } from '../models/user';
 
 interface AuthContextType {
-  user: User;
-  login: (credentials: AuthFormData) => void;
+  user: User | null;
+  login: (credentials: AuthFormData) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
+  register: (userData: AuthFormData) => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,28 +21,154 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>({
-    id: '1',
-    name: 'Fulano',
-    email: 'fulano@email.com',
-    username: 'fulano',
-    isLoggedIn: true,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const login = (credentials: AuthFormData) => {
-    console.log('login', credentials);
-    setUser((prev) => ({ ...prev, isLoggedIn: true }));
+  const login = async (credentials: AuthFormData) => {
+    setLoading(true);
+    try {
+      console.log('Enviando login:', {
+        Email: credentials.email,
+        Senha: credentials.password
+      });
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Email: credentials.email,
+          Senha: credentials.password
+        }),
+      });
+
+      // Primeiro obtenha o texto bruto para debug
+      const responseText = await response.text();
+      console.log('Resposta bruta:', responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Erro ao parsear JSON:', e);
+        throw new Error('Resposta do servidor não é JSON válido');
+      }
+
+      console.log('Resposta parseada:', data);
+      console.log('Status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(data.message || data.title || `Erro ${response.status}: ${response.statusText}`);
+      }
+
+      // Tratamento flexível para diferentes estruturas de resposta
+      const token = data.Token || data.token || data.accessToken;
+      const usuarioData = data.Usuario || data.usuario || data.user || data;
+
+      console.log('Token encontrado:', token);
+      console.log('UsuarioData encontrado:', usuarioData);
+
+      if (!token) {
+        console.error('Nenhum token encontrado na resposta. Estrutura completa:', data);
+        throw new Error('Token de autenticação não recebido');
+      }
+
+      // Salvar token no localStorage
+      localStorage.setItem('token', token);
+      
+      // Criar usuário com dados disponíveis (mais flexível)
+      const userData: User = {
+        id: (usuarioData.Id || usuarioData.id || '1').toString(),
+        name: usuarioData.Nome || usuarioData.nome || 'Usuário',
+        email: usuarioData.Email || usuarioData.email || credentials.email,
+        isLoggedIn: true,
+      };
+      
+      setUser(userData);
+      console.log('Login realizado com sucesso:', userData);
+      
+    } catch (error) {
+      console.error('Erro no login:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const register = async (userData: AuthFormData) => {
+    setLoading(true);
+    try {
+      if (userData.password !== userData.confirmPassword) {
+        throw new Error('As senhas não coincidem');
+      }
+
+      console.log('Enviando registro:', {
+        Nome: userData.name,
+        Email: userData.email,
+        Senha: userData.password,
+        ConfirmarSenha: userData.confirmPassword
+      });
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Nome: userData.name,
+          Email: userData.email,
+          Turma: 'default',
+          Senha: userData.password,
+          ConfirmarSenha: userData.confirmPassword
+        }),
+      });
+
+      const responseText = await response.text();
+      console.log('Resposta bruta do registro:', responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error('Resposta do servidor não é JSON válido');
+      }
+
+      console.log('Resposta parseada do registro:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || data.title || `Erro ${response.status}: ${response.statusText}`);
+      }
+
+      console.log('Usuário registrado com sucesso:', data);
+      
+    } catch (error) {
+      console.error('Erro no registro:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
-    setUser((prev) => ({ ...prev, isLoggedIn: false }));
+    localStorage.removeItem('token');
+    setUser(null);
   };
 
   const updateUser = (userData: Partial<User>) => {
-    setUser((prev) => ({ ...prev, ...userData }));
+    if (user) {
+      setUser({ ...user, ...userData });
+    }
   };
 
-  const value = { user, login, logout, updateUser };
+  React.useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      console.log('Token encontrado no localStorage');
+    }
+  }, []);
+
+  const value = { user, login, logout, updateUser, register, loading };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

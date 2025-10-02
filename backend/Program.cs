@@ -19,6 +19,18 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
+// Configurar CORS - ADICIONE ESTA PARTE
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Inicialização do Supabase
 builder.Services.AddSingleton<SupabaseService>();
 
@@ -53,6 +65,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// ADICIONE ESTA LINHA - UseCors deve vir antes de UseAuthentication e UseAuthorization
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 

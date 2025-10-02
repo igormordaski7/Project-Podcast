@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
   return (
     <section className="screen" id="homeScreen">
       <h1 className="hero-title">
-        Olá <span className="username">{user.name}</span>, seja bem vindo de volta!<br/>
+        Olá <span className="username">{user?.name}</span>, seja bem vindo de volta!<br/>
         Confira nossas últimas notícias e PodCasts!
       </h1>
 
