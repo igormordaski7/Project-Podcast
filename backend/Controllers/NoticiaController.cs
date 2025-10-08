@@ -3,6 +3,7 @@ using MeuProjeto.Models;
 using MeuProjeto.Services;
 using backend.Models;
 using backend.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers
 {
@@ -34,6 +35,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] NoticiaDto dto)
         {
             if (dto == null)
@@ -62,6 +64,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] NoticiaDto dto)
         {
             if (dto == null || id != dto.Id)
@@ -95,6 +98,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var existing = await _supabase.Client
@@ -111,6 +115,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("upload")]
+        [Authorize]
         public async Task<IActionResult> UploadNoticia(
             IFormFile? capa,
             [FromForm] string titulo,

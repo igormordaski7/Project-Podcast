@@ -7,7 +7,6 @@ namespace MeuProjeto.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 2. Adicione este atributo para proteger todos os métodos neste controller
     public class PodcastController : ControllerBase
     {
         private readonly SupabaseService _supabase;
@@ -35,6 +34,7 @@ namespace MeuProjeto.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] PodcastDto dto)
         {
             if (dto == null)
@@ -65,6 +65,7 @@ namespace MeuProjeto.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] PodcastDto dto)
         {
             if (dto == null || id != dto.Id)
@@ -100,6 +101,7 @@ namespace MeuProjeto.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var existing = await _supabase.Client
@@ -128,6 +130,7 @@ namespace MeuProjeto.Controllers
         }
 
         [HttpPost("upload")]
+        [Authorize]
         public async Task<IActionResult> UploadPodcast(
             IFormFile audio,
             IFormFile? capa,
