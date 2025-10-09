@@ -49,8 +49,7 @@ namespace MeuProjeto.Controllers
                 Console.WriteLine($"Usuário encontrado: {usuario.Email}");
                 Console.WriteLine($"Hash no banco: {usuario.Senha}");
 
-                // 8. Verifique o usuário e a senha com BCrypt
-                if (usuario == null || !BCrypt.Net.BCrypt.Verify(dto.Senha, usuario.Senha))
+                if (!BCrypt.Net.BCrypt.Verify(dto.Senha, usuario.Senha))
                 {
                     Console.WriteLine("Senha inválida");
                     return Unauthorized("Credenciais inválidas.");
@@ -58,10 +57,8 @@ namespace MeuProjeto.Controllers
 
                 Console.WriteLine("Senha válida, gerando token...");
 
-                // 9. Gere o Token JWT
                 var token = GenerateJwtToken(usuario);
 
-                // 10. Retorne o token e os dados do usuário
                 return Ok(new
                 {
                     Token = token,
@@ -69,8 +66,8 @@ namespace MeuProjeto.Controllers
                     {
                         Id = usuario.Id,
                         Nome = usuario.Nome,
-                        Turma = usuario.Turma,
-                        Email = usuario.Email
+                        Email = usuario.Email,
+                        Role = usuario.Role // ✅ agora o frontend recebe a role
                     }
                 });
             }
@@ -81,8 +78,6 @@ namespace MeuProjeto.Controllers
             }
         }
 
-        // ADICIONE ESTES NOVOS ENDPOINTS PARA DEBUG:
-
         [HttpPost("test-bcrypt")]
         public IActionResult TestBcrypt([FromBody] TestBcryptDto dto)
         {
@@ -92,11 +87,9 @@ namespace MeuProjeto.Controllers
                 Console.WriteLine($"Senha fornecida: {dto.Senha}");
                 Console.WriteLine($"Hash fornecido: {dto.Hash}");
 
-                // Testar geração de novo hash
                 var novoHash = BCrypt.Net.BCrypt.HashPassword(dto.Senha);
                 Console.WriteLine($"Novo hash gerado: {novoHash}");
 
-                // Testar verificação com o hash existente
                 var isValid = BCrypt.Net.BCrypt.Verify(dto.Senha, dto.Hash);
                 Console.WriteLine($"Verificação com hash existente: {isValid}");
 
@@ -137,7 +130,6 @@ namespace MeuProjeto.Controllers
                 {
                     Console.WriteLine($"Processando usuário: {testUser.Email}");
 
-                    // Verificar e deletar usuário existente
                     var existing = await _supabase.Client
                         .From<Usuario>()
                         .Where(u => u.Email == testUser.Email)
@@ -149,18 +141,14 @@ namespace MeuProjeto.Controllers
                         await _supabase.Client.From<Usuario>().Delete(existing.Models.First());
                     }
 
-                    // Criar novo hash
-                    Console.WriteLine($"Criando novo hash para: {testUser.Email}");
                     var senhaHash = BCrypt.Net.BCrypt.HashPassword(testUser.Senha);
-                    Console.WriteLine($"Novo hash criado: {senhaHash}");
 
-                    // Criar novo usuário
                     var usuario = new Usuario
                     {
                         Nome = testUser.Nome,
                         Email = testUser.Email,
-                        Turma = testUser.Turma,
-                        Senha = senhaHash
+                        Senha = senhaHash,
+                        Role = testUser.Email.Contains("admin") ? "admin" : "user" // ✅ role correta
                     };
 
                     var result = await _supabase.Client.From<Usuario>().Insert(usuario);
@@ -174,7 +162,8 @@ namespace MeuProjeto.Controllers
                             Email = created.Email,
                             Nome = created.Nome,
                             Hash = created.Senha,
-                            Id = created.Id
+                            Id = created.Id,
+                            Role = created.Role
                         });
                     }
                 }
@@ -192,9 +181,6 @@ namespace MeuProjeto.Controllers
             }
         }
 
-        // 11. Método para gerar o token
-        // Dentro da classe AuthController, no método GenerateJwtToken
-
         private string GenerateJwtToken(Usuario usuario)
         {
             var jwtKey = _configuration["Jwt:Key"];
@@ -203,15 +189,13 @@ namespace MeuProjeto.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // MODIFICAR A CRIAÇÃO DAS CLAIMS
             var claims = new[]
             {
-        new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim("id", usuario.Id.ToString()),
-        // ADICIONAR ESTA LINHA
-        new Claim(ClaimTypes.Role, usuario.Role)
-    };
+                new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("id", usuario.Id.ToString()),
+                new Claim(ClaimTypes.Role, usuario.Role)
+            };
 
             var token = new JwtSecurityToken(
                 issuer: jwtIssuer,
@@ -224,7 +208,6 @@ namespace MeuProjeto.Controllers
         }
     }
 
-    // DTO para o teste do BCrypt
     public class TestBcryptDto
     {
         public string Senha { get; set; } = null!;
