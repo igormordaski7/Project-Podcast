@@ -35,11 +35,10 @@
   transform: translateY(0);
   transition: 0.5s;
   width: 100%;
-  padding: 20px;
+  padding: 100px;
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: 10px;
-  margin: 1.9rem;
+  backdrop-filter: blur(1px);
+  margin: 60px;
 }
 
 /*Text*/
@@ -49,7 +48,7 @@
 }
 
 .player-text-body {
-  letter-spacing: 1px;
+  letter-spacing: 0.1px;
   font-size: 0.9rem;
   margin: 5px 0 15px 0;
 }
