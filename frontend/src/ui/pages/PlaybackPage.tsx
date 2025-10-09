@@ -44,14 +44,13 @@ const PlaybackPage: React.FC = () => {
         ) : (
           <PlayerCard 
             title="Nenhum podcast selecionado"
-            subtitle="Selecione um podcast para começar a ouvir"
+            subtitle=""
             imageUrl="" // ou uma imagem padrão
           />
         )}
         
         {hasValidPodcast && currentPodcast.audioUrl && (
           <div className="audio-section">
-            <h3>Controles de reprodução</h3>
             <MiniPlayer />
           </div>
         )}

@@ -1,5 +1,4 @@
-// /home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/frontend/src/hooks/useCurrentPodcast.tsx
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface PodcastItem {
   id: string;
@@ -29,7 +28,33 @@ interface CurrentPodcastProviderProps {
 }
 
 export const CurrentPodcastProvider = ({ children }: CurrentPodcastProviderProps) => {
-  const [currentPodcast, setCurrentPodcast] = useState<PodcastItem | null>(null);
+  const [currentPodcast, setCurrentPodcastState] = useState<PodcastItem | null>(null);
+
+  // Carregar do localStorage ao inicializar
+  useEffect(() => {
+    const savedPodcast = localStorage.getItem('currentPodcast');
+    if (savedPodcast) {
+      try {
+        const podcast = JSON.parse(savedPodcast);
+        setCurrentPodcastState(podcast);
+        console.log('📁 Podcast carregado do localStorage:', podcast.titulo);
+      } catch (error) {
+        console.error('❌ Erro ao carregar podcast do localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Função para definir o podcast (salva no localStorage também)
+  const setCurrentPodcast = (podcast: PodcastItem | null) => {
+    setCurrentPodcastState(podcast);
+    if (podcast) {
+      localStorage.setItem('currentPodcast', JSON.stringify(podcast));
+      console.log('💾 Podcast salvo no localStorage:', podcast.titulo);
+    } else {
+      localStorage.removeItem('currentPodcast');
+      console.log('🗑️ Podcast removido do localStorage');
+    }
+  };
 
   const value: CurrentPodcastContextType = {
     currentPodcast,

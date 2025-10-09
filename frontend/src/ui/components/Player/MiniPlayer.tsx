@@ -5,49 +5,81 @@ import './MiniPlayer.css';
 const MiniPlayer: React.FC = () => {
   const { currentPodcast } = useCurrentPodcast();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isVolumeOpen, setIsVolumeOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState('0:00');
-  const [totalTime, setTotalTime] = useState('0:00');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const audioRef = useRef<HTMLAudioElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
-  // Atualizar a fonte do áudio quando o podcast mudar
+  // Debug: verificar o que está vindo do hook
+  useEffect(() => {
+    console.log('🎵 CurrentPodcast do hook:', currentPodcast);
+  }, [currentPodcast]);
+
+  // Carregar áudio quando o podcast mudar
   useEffect(() => {
     if (currentPodcast && audioRef.current) {
-      // Garantir que audioUrl é uma string válida
-      const audioUrl = currentPodcast.audioUrl || '';
-      audioRef.current.src = audioUrl;
+      console.log('🚀 Iniciando carregamento do áudio:', currentPodcast.audioUrl);
+      
+      setIsLoading(true);
+      setError(null);
+
+      if (!currentPodcast.audioUrl) {
+        setError('URL do áudio não disponível');
+        setIsLoading(false);
+        return;
+      }
+
+      audioRef.current.src = currentPodcast.audioUrl;
+      audioRef.current.preload = 'metadata';
       audioRef.current.load();
+
       setIsPlaying(false);
-      setCurrentTime('0:00');
-      setTotalTime('0:00');
+      setCurrentTime(0);
+      setDuration(0);
     }
   }, [currentPodcast]);
 
-  const togglePlayPause = () => {
-    if (audioRef.current && currentPodcast) {
+  const togglePlayPause = async () => {
+    if (!audioRef.current || !currentPodcast || !currentPodcast.audioUrl) {
+      console.log('❌ Não pode reproduzir - dados insuficientes');
+      return;
+    }
+
+    try {
       if (isPlaying) {
         audioRef.current.pause();
+        setIsPlaying(false);
+        console.log('⏸️ Áudio pausado');
       } else {
-        audioRef.current.play().catch(error => {
-          console.error('Erro ao reproduzir áudio:', error);
-        });
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
+        console.log('▶️ Iniciando reprodução...');
+        
+        if (audioRef.current.readyState < 2) {
+          console.log('🔄 Áudio não pronto, recarregando...');
+          audioRef.current.load();
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
 
-  const toggleVolume = () => {
-    setIsVolumeOpen(!isVolumeOpen);
+        await audioRef.current.play();
+        setIsPlaying(true);
+        console.log('✅ Reprodução iniciada!');
+      }
+    } catch (playError) {
+      console.error('❌ Erro na reprodução:', playError);
+      setError(`Erro: ${playError instanceof Error ? playError.message : 'Falha na reprodução'}`);
+      setIsPlaying(false);
+    }
   };
 
   // Atualizar o tempo do áudio
   const updateTime = () => {
     if (audioRef.current) {
-      const current = audioRef.current.currentTime;
-      const duration = audioRef.current.duration || 0;
-      setCurrentTime(formatTime(current));
-      setTotalTime(formatTime(duration));
+      setCurrentTime(audioRef.current.currentTime);
+      if (audioRef.current.duration && !isNaN(audioRef.current.duration)) {
+        setDuration(audioRef.current.duration);
+      }
     }
   };
 
@@ -60,78 +92,128 @@ const MiniPlayer: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Se não há podcast selecionado, mostrar player desativado
+  // Clique na barra de progresso
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !progressBarRef.current || !duration) return;
+    
+    e.stopPropagation();
+    
+    const progressContainer = progressBarRef.current;
+    const clickX = e.nativeEvent.offsetX;
+    const width = progressContainer.clientWidth;
+    const clickPercent = clickX / width;
+    
+    const newTime = clickPercent * duration;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  // Handler para erros de áudio
+  const handleAudioError = (e: React.SyntheticEvent<HTMLAudioElement, Event>) => {
+    const audio = e.target as HTMLAudioElement;
+    console.error('❌ Erro no elemento de áudio:', audio.error);
+    setError('Erro ao carregar áudio');
+    setIsPlaying(false);
+    setIsLoading(false);
+  };
+
+  // Se não há podcast selecionado, mostrar card desativado
   if (!currentPodcast) {
     return (
-      <div className="audio green-audio-player disabled">
-        <div className="play-pause-btn disabled">
-          <svg viewBox="0 0 18 24" height="24" width="18" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 12L0 24V0" fillRule="evenodd" fill="#cccccc"></path>
-          </svg>
-        </div>
-        <div className="controls">
-          <span className="current-time">0:00</span>
-          <div data-direction="horizontal" className="slider">
-            <div className="progress disabled">
-              <div className="pin"></div>
+      <div className="music-card disabled">
+        <div className="card-header">
+          <div className="track-info">
+            <svg
+              className="track-icon"
+              fill="none"
+              height="18"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              width="18"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M9 18V5l12-2v13"></path>
+              <circle cx="6" cy="18" r="3"></circle>
+              <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <div className="track-details">
+              <span className="track-title">Nenhum podcast selecionado</span>
+              <p className="track-artist">Selecione um podcast para ouvir</p>
             </div>
           </div>
-          <span className="total-time">0:00</span>
         </div>
-        <div className="volume">
-          <div className="volume-btn disabled">
-            <svg viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z" fillRule="evenodd" fill="#cccccc"></path>
-            </svg>
-          </div>
+        <div className="progress-container">
+          <div className="progress-bar" style={{ width: '0%' }}></div>
         </div>
-        <p className="no-podcast-message">Selecione um podcast</p>
+        <div className="progress-time">
+          <span>0:00</span>
+          <span>0:00</span>
+        </div>
       </div>
     );
   }
 
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="audio green-audio-player">
-      <div className="play-pause-btn" onClick={togglePlayPause}>
-        <svg viewBox="0 0 18 24" height="24" width="18" xmlns="http://www.w3.org/2000/svg">
-          <path 
-            id="playPause" 
-            className="play-pause-icon" 
-            d={isPlaying ? "M0 0h6v24H0zM12 0h6v24h-6z" : "M18 12L0 24V0"} 
-            fillRule="evenodd" 
-            fill="#566574"
-          ></path>
-        </svg>
-      </div>
-
-      <div className="controls">
-        <span className="current-time">{currentTime}</span>
-        <div data-direction="horizontal" className="slider">
-          <div className="progress">
-            <div data-method="rewind" id="progress-pin" className="pin"></div>
+    <div className={`music-card ${isPlaying ? 'playing' : ''} ${isLoading ? 'loading' : ''}`}>
+      <div className="card-header" onClick={togglePlayPause}>
+        <div className="track-info">
+          {isLoading ? (
+            <div className="loading-spinner"></div>
+          ) : (
+            <svg
+              className="track-icon"
+              fill="none"
+              height="18"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              width="18"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {isPlaying ? (
+                <>
+                  <rect x="6" y="4" width="4" height="16"></rect>
+                  <rect x="14" y="4" width="4" height="16"></rect>
+                </>
+              ) : (
+                <path d="M9 18V5l12-2v13"></path>
+              )}
+              <circle cx="6" cy="18" r="3"></circle>
+              <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+          )}
+          <div className="track-details">
+            <span className="track-title">{currentPodcast.titulo}</span>
+            <p className="track-artist">
+              {isLoading ? 'Carregando...' : 
+               error ? `Erro: ${error}` :
+               isPlaying ? 'Reproduzindo...' : 'Clique para reproduzir'}
+            </p>
           </div>
         </div>
-        <span className="total-time">{totalTime}</span>
       </div>
-
-      <div className="volume">
-        <div className="volume-btn" onClick={toggleVolume}>
-          <svg viewBox="0 0 24 24" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path 
-              id="speaker" 
-              d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z" 
-              fillRule="evenodd" 
-              fill="#566574"
-            ></path>
-          </svg>
-        </div>
-        <div className={`volume-controls ${isVolumeOpen ? '' : 'hidden'}`}>
-          <div data-direction="vertical" className="slider">
-            <div className="progress">
-              <div data-method="changeVolume" id="volume-pin" className="pin"></div>
-            </div>
-          </div>
-        </div>
+      
+      <div 
+        className="progress-container" 
+        ref={progressBarRef}
+        onClick={handleProgressClick}
+      >
+        <div 
+          className="progress-bar" 
+          style={{ width: `${progressPercent}%` }}
+        ></div>
+      </div>
+      
+      <div className="progress-time">
+        <span>{formatTime(currentTime)}</span>
+        <span>{formatTime(duration)}</span>
       </div>
 
       <audio 
@@ -139,14 +221,19 @@ const MiniPlayer: React.FC = () => {
         crossOrigin="anonymous"
         onTimeUpdate={updateTime}
         onLoadedMetadata={updateTime}
+        onLoadedData={() => {
+          console.log('✅ Áudio carregado');
+          setIsLoading(false);
+        }}
         onEnded={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onError={handleAudioError}
+        onLoadStart={() => setIsLoading(true)}
+        preload="metadata"
       >
         Seu navegador não suporta o elemento de áudio.
       </audio>
-
-      <div className="now-playing">
-        <span className="podcast-title">{currentPodcast.titulo}</span>
-      </div>
     </div>
   );
 };

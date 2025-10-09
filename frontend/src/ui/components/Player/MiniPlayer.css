@@ -1,176 +1,206 @@
-.audio.green-audio-player {
-  width: 400px;
-  min-width: 300px;
-  height: 56px;
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.07);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-left: 24px;
-  padding-right: 24px;
-  border-radius: 4px;
-  user-select: none;
-  -webkit-user-select: none;
-  background-color: #fff;
-  position: fixed; /* Make it overlay other elements */
-  bottom: 20px; /* Position at the bottom */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust for centering */
-  z-index: 1000; /* Ensure it overlays other elements */
-}
-
-.audio.green-audio-player .play-pause-btn {
+/* From Uiverse.io by ParasSalunke - Modificado */
+.music-card {
   cursor: pointer;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  background-color: #f7f7f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: fixed;
+  bottom: 30px; /* Distância aumentada do bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  height: auto; /* Altura automática */
+  min-height: 100px; /* Altura mínima reduzida */
 }
 
-.audio.green-audio-player .slider {
-  flex-grow: 1;
-  background-color: #d8d8d8;
-  cursor: pointer;
-  position: relative;
+.music-card:hover {
+  transform: translateX(-50%) translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.audio.green-audio-player .slider .progress {
-  background-color: #44bfa3;
-  border-radius: inherit;
-  position: absolute;
-  pointer-events: none;
+.music-card:active {
+  transform: translateX(-50%) translateY(-2px);
 }
 
-.audio.green-audio-player .slider .progress .pin {
-  height: 16px;
-  width: 16px;
-  border-radius: 8px;
-  background-color: #44bfa3;
-  position: absolute;
-  pointer-events: all;
-  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.32);
-}
-
-.audio.green-audio-player .controls {
-  font-family: "Roboto", sans-serif;
-  font-size: 16px;
-  line-height: 18px;
-  color: #55606e;
-  display: flex;
-  flex-grow: 1;
-  justify-content: space-between;
-  align-items: center;
-  margin-left: 24px;
-  margin-right: 24px;
-}
-
-.audio.green-audio-player .controls .slider {
-  margin-left: 16px;
-  margin-right: 16px;
-  border-radius: 2px;
-  height: 4px;
-}
-
-.audio.green-audio-player .controls .slider .progress {
-  width: 0;
-  height: 100%;
-}
-
-.audio.green-audio-player .controls .slider .pin {
-  right: -8px;
-  top: -6px;
-}
-
-.audio.green-audio-player .controls span {
-  cursor: default;
-}
-
-.audio.green-audio-player .volume {
-  position: relative;
-}
-
-.audio.green-audio-player .volume .volume-btn {
-  cursor: pointer;
-}
-
-.audio.green-audio-player .volume .volume-btn .open path {
-  fill: #44bfa3;
-}
-
-.audio.green-audio-player .volume .volume-controls {
-  width: 30px;
-  height: 135px;
-  background-color: rgba(0, 0, 0, 0.62);
-  border-radius: 7px;
-  position: absolute;
-  left: -3px;
-  bottom: 52px;
-  flex-direction: column;
-  align-items: center;
-  display: flex;
-}
-
-.audio.green-audio-player .volume .volume-controls.hidden {
-  display: none;
-}
-
-.audio.green-audio-player .volume .volume-controls .slider {
-  margin-top: 12px;
-  margin-bottom: 12px;
-  width: 6px;
-  border-radius: 3px;
-}
-
-.audio.green-audio-player .volume .volume-controls .slider .progress {
-  bottom: 0;
-  height: 100%;
-  width: 6px;
-}
-
-.audio.green-audio-player .volume .volume-controls .slider .progress .pin {
-  left: -5px;
-  top: -8px;
-}
-
-/* /home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/frontend/src/ui/components/Player/MiniPlayer.css */
-.audio.green-audio-player {
-  position: relative;
-}
-
-.audio.disabled {
+.music-card.disabled {
   opacity: 0.6;
-  pointer-events: none;
-}
-
-.play-pause-btn.disabled,
-.volume-btn.disabled {
   cursor: not-allowed;
 }
 
-.progress.disabled {
-  background-color: #e0e0e0;
+.music-card.disabled:hover {
+  transform: translateX(-50%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.no-podcast-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px; /* Padding vertical reduzido */
+  background-color: #fff;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.track-icon {
+  height: 20px; /* Ícone menor */
+  width: 20px; /* Ícone menor */
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.track-details {
+  margin-left: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.track-title {
+  font-size: 1rem; /* Fonte um pouco menor */
+  font-weight: 600;
+  color: #333;
   margin: 0;
-  font-size: 0.8rem;
-  color: #999;
-  white-space: nowrap;
-}
-
-.now-playing {
-  position: absolute;
-  top: -25px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #666;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.podcast-title {
+.track-artist {
+  font-size: 0.8rem; /* Fonte menor */
+  color: #666;
+  margin: 2px 0 0 0; /* Margem reduzida */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progress-container {
+  position: relative;
+  margin: 12px 16px 6px 16px; /* Margens reduzidas */
+  height: 5px; /* Altura da barra reduzida */
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: height 0.2s ease;
+}
+
+.progress-container:hover {
+  height: 6px; /* Altura no hover reduzida */
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #f59e0b;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 4px rgba(245, 158, 11, 0.3);
+}
+
+.progress-time {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 12px 16px; /* Padding bottom reduzido */
+  font-size: 0.75rem; /* Fonte do tempo menor */
+  color: #6b7280;
   font-weight: 500;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 20px; /* Spinner menor */
+  height: 20px; /* Spinner menor */
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estados de reprodução */
+.music-card.playing .track-icon {
+  color: #10b981;
+  animation: pulse 2s infinite;
+}
+
+.music-card.loading .track-icon {
+  opacity: 0.5;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Melhorias de acessibilidade */
+.music-card:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .music-card {
+    max-width: calc(100% - 32px);
+    margin: 0 16px;
+    bottom: 70px; /* Distância menor no mobile */
+  }
+  
+  .card-header {
+    padding: 10px 12px; /* Padding ainda menor no mobile */
+  }
+  
+  .track-title {
+    font-size: 0.9rem; /* Fonte menor no mobile */
+  }
+  
+  .track-artist {
+    font-size: 0.75rem; /* Fonte menor no mobile */
+  }
+  
+  .progress-container {
+    margin: 10px 12px 4px 12px;
+  }
+  
+  .progress-time {
+    padding: 0 12px 10px 12px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 360px) {
+  .music-card {
+    bottom: 60px;
+    max-width: calc(100% - 20px);
+  }
+}
+
+/* Indicador de erro */
+.track-artist:has(+ .error-message) {
+  color: #ef4444;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.7rem;
+  margin-top: 2px;
 }
