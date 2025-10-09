@@ -1,19 +1,44 @@
+// /home/rafael/Projects/PesquisaESociedade/podcast/Project-Podcast/frontend/src/hooks/useCurrentPodcast.tsx
 import React, { createContext, useContext, useState } from 'react';
-import type { ReactNode } from 'react'; // <-- import tipo-only
 
-const CurrentPodcastContext = createContext<any>(null);
+export interface PodcastItem {
+  id: string;
+  titulo: string;
+  descricao: string;
+  capaUrl: string;
+  audioUrl: string | null;
+}
 
-export const CurrentPodcastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [currentPodcast, setCurrentPodcast] = useState<any>(() => {
-    const stored = localStorage.getItem('currentPodcast');
-    return stored ? JSON.parse(stored) : null;
-  });
+interface CurrentPodcastContextType {
+  currentPodcast: PodcastItem | null;
+  setCurrentPodcast: (podcast: PodcastItem | null) => void;
+}
+
+const CurrentPodcastContext = createContext<CurrentPodcastContextType | undefined>(undefined);
+
+export const useCurrentPodcast = () => {
+  const context = useContext(CurrentPodcastContext);
+  if (!context) {
+    throw new Error('useCurrentPodcast must be used within a CurrentPodcastProvider');
+  }
+  return context;
+};
+
+interface CurrentPodcastProviderProps {
+  children: React.ReactNode;
+}
+
+export const CurrentPodcastProvider = ({ children }: CurrentPodcastProviderProps) => {
+  const [currentPodcast, setCurrentPodcast] = useState<PodcastItem | null>(null);
+
+  const value: CurrentPodcastContextType = {
+    currentPodcast,
+    setCurrentPodcast,
+  };
 
   return (
-    <CurrentPodcastContext.Provider value={{ currentPodcast, setCurrentPodcast }}>
+    <CurrentPodcastContext.Provider value={value}>
       {children}
     </CurrentPodcastContext.Provider>
   );
 };
-
-export const useCurrentPodcast = () => useContext(CurrentPodcastContext);

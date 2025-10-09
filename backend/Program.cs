@@ -19,12 +19,12 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Configurar CORS - ADICIONE ESTA PARTE
+// Configurar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+        policy.WithOrigins("http://localhost:5173", "http://12.0.0.1:5173")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -55,23 +55,54 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
+// CORREÇÃO: SUBSTITUA O ANTIGO AddSwaggerGen() POR ESTE BLOCO AQUI
+builder.Services.AddSwaggerGen(options =>
+{
+    // Adiciona a definição de segurança "Bearer" que o Swagger usará
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Faça o login para obter um token e insira 'Bearer ' + token aqui."
+    });
+
+    // Diz ao Swagger para adicionar essa exigência de segurança a todos os endpoints
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+// ==========================================================
+// TUDO QUE COMEÇA COM "builder.Services" DEVE ESTAR ACIMA DESTA LINHA
+// ==========================================================
 var app = builder.Build();
 
-// Swagger só no dev
+// Configure o pipeline de requisições HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// ADICIONE ESTA LINHA - UseCors deve vir antes de UseAuthentication e UseAuthorization
 app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
-// Ativa autenticação e autorização
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -21,5 +21,8 @@ namespace MeuProjeto.Models
         [Column("senha")]
         public string Senha { get; set; }
 
+        [Column("role")]
+        public string Role { get; set; }
+
     }
 }

@@ -110,7 +110,8 @@ namespace MeuProjeto.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"ERRO no teste BCrypt: {ex}");
-                return BadRequest(new { 
+                return BadRequest(new
+                {
                     Erro = ex.Message,
                     Tipo = ex.GetType().Name
                 });
@@ -192,6 +193,8 @@ namespace MeuProjeto.Controllers
         }
 
         // 11. Método para gerar o token
+        // Dentro da classe AuthController, no método GenerateJwtToken
+
         private string GenerateJwtToken(Usuario usuario)
         {
             var jwtKey = _configuration["Jwt:Key"];
@@ -200,12 +203,15 @@ namespace MeuProjeto.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            // MODIFICAR A CRIAÇÃO DAS CLAIMS
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("id", usuario.Id.ToString())
-            };
+        new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim("id", usuario.Id.ToString()),
+        // ADICIONAR ESTA LINHA
+        new Claim(ClaimTypes.Role, usuario.Role)
+    };
 
             var token = new JwtSecurityToken(
                 issuer: jwtIssuer,
