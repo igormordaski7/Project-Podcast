@@ -1,67 +1,172 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import Menu from '../components/Menu/Menu';
-import PlayerCard from '../components/Player/PlayerCard';
-import MiniPlayer from '../components/Player/MiniPlayer';
-import type { PodcastItem } from '../../hooks/usePodcasts';
+import './AdminPage.css';
+
+export interface AdminPodcastItem {
+  id?: number;
+  titulo: string;
+  descricao: string;
+  capaFile?: File;
+  audioFile?: File;
+  capaUrl?: string;
+  audioUrl?: string;
+}
 
 const AdminPage: React.FC = () => {
   const { user } = useAuth();
-  const [currentPodcast, setCurrentPodcast] = useState<PodcastItem | null>(null);
+  const [podcasts, setPodcasts] = useState<AdminPodcastItem[]>([]);
+  const [selectedPodcast, setSelectedPodcast] = useState<AdminPodcastItem | null>(null);
+  const [newPodcast, setNewPodcast] = useState<AdminPodcastItem>({ titulo: '', descricao: '' });
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Buscar podcasts do backend
+  const fetchPodcasts = async () => {
+    try {
+      const res = await fetch('/api/podcasts');
+      const data = await res.json();
+      setPodcasts(data);
+    } catch (error) {
+      console.error('Erro ao buscar podcasts:', error);
+      setStatusMessage('Erro ao carregar podcasts');
+    }
+  };
 
   useEffect(() => {
-    // Ler do localStorage temporariamente
-    const savedPodcast = localStorage.getItem('currentPodcast');
-    if (savedPodcast) {
-      try {
-        setCurrentPodcast(JSON.parse(savedPodcast));
-      } catch (error) {
-        console.error('Erro ao parsear podcast do localStorage:', error);
-      }
-    }
+    fetchPodcasts();
   }, []);
 
-  const displayName = user?.name || 'visitante';
-  const hasValidPodcast = currentPodcast && currentPodcast.titulo;
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (selectedPodcast) {
+      setSelectedPodcast({ ...selectedPodcast, [name]: value });
+    } else {
+      setNewPodcast({ ...newPodcast, [name]: value });
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, field: 'capaFile' | 'audioFile') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (selectedPodcast) {
+      setSelectedPodcast({ ...selectedPodcast, [field]: file });
+    } else {
+      setNewPodcast({ ...newPodcast, [field]: file });
+    }
+  };
+
+  const handleSelectPodcast = (podcast: AdminPodcastItem) => {
+    setSelectedPodcast(podcast);
+    setNewPodcast({ titulo: '', descricao: '' });
+    setStatusMessage(null);
+  };
+
+  const handleDeletePodcast = async (podcast: AdminPodcastItem) => {
+    if (!podcast.id) return;
+    try {
+      const confirmed = window.confirm(`Deseja realmente excluir "${podcast.titulo}"?`);
+      if (!confirmed) return;
+
+      const res = await fetch(`/api/podcasts/${podcast.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Erro ao excluir podcast');
+
+      setStatusMessage('Podcast excluído com sucesso');
+      fetchPodcasts();
+      setSelectedPodcast(null);
+    } catch (error: any) {
+      console.error(error);
+      setStatusMessage(error.message || 'Erro ao excluir podcast');
+    }
+  };
+
+  const handleCreateOrUpdate = async () => {
+    try {
+      setLoading(true);
+      setStatusMessage(null);
+
+      const target = selectedPodcast || newPodcast;
+      if (!target.titulo) {
+        setStatusMessage('Título é obrigatório');
+        setLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('titulo', target.titulo || '');
+      formData.append('descricao', target.descricao || '');
+      if (target.capaFile) formData.append('capa', target.capaFile);
+      if (target.audioFile) formData.append('audio', target.audioFile);
+
+      const url = selectedPodcast ? `/api/podcasts/${selectedPodcast.id}` : '/api/podcasts';
+      const method = selectedPodcast ? 'PUT' : 'POST';
+
+      const res = await fetch(url, { method, body: formData });
+      if (!res.ok) {
+        const errData = await res.json();
+        setStatusMessage(errData.message || 'Erro ao salvar podcast');
+        setLoading(false);
+        return;
+      }
+
+      setStatusMessage(selectedPodcast ? 'Podcast atualizado com sucesso!' : 'Podcast criado com sucesso!');
+      setSelectedPodcast(null);
+      setNewPodcast({ titulo: '', descricao: '' });
+      fetchPodcasts();
+    } catch (error: any) {
+      console.error(error);
+      setStatusMessage(error.message || 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <section className="screen" id="playbackScreen">
-      <h1 className="hero-title">
-        Olá <span className="username">{displayName}</span>,<br/>
-        {hasValidPodcast ? 'Aproveite o podcast!' : 'Selecione um podcast para ouvir!'}
-      </h1>
+    <div className="admin-page-body">
+      <h1>Administração de Podcasts</h1>
 
-      <Menu />
+      {statusMessage && <div className="status-message">{statusMessage}</div>}
 
-      <div className="playback-content">
-        {/* Passando as props necessárias para o PlayerCard */}
-        {hasValidPodcast ? (
-          <PlayerCard 
-            title={currentPodcast.titulo}
-            subtitle={currentPodcast.descricao || 'Sem descrição'}
-            imageUrl={currentPodcast.capaUrl || ''}
-          />
-        ) : (
-          <PlayerCard 
-            title="Nenhum podcast selecionado"
-            subtitle=""
-            imageUrl="" // ou uma imagem padrão
-          />
-        )}
-        
-        {hasValidPodcast && currentPodcast.audioUrl && (
-          <div className="audio-section">
-            <MiniPlayer />
-          </div>
-        )}
+      <div className="podcast-form-container">
+        <h2>{selectedPodcast ? 'Editar Podcast' : 'Novo Podcast'}</h2>
+        <input
+          type="text"
+          name="titulo"
+          placeholder="Título"
+          value={selectedPodcast?.titulo || newPodcast.titulo}
+          onChange={handleInputChange}
+        />
+        <textarea
+          name="descricao"
+          placeholder="Descrição"
+          value={selectedPodcast?.descricao || newPodcast.descricao}
+          onChange={handleInputChange}
+        />
+
+        <input type="file" accept="image/*" onChange={(e) => handleFileChange(e, 'capaFile')} />
+        <input type="file" accept="audio/*" onChange={(e) => handleFileChange(e, 'audioFile')} />
+
+        <button onClick={handleCreateOrUpdate} disabled={loading}>
+          {loading ? 'Processando...' : selectedPodcast ? 'Atualizar Podcast' : 'Criar Podcast'}
+        </button>
       </div>
 
-      {!hasValidPodcast && (
-        <div className="no-podcast-selected">
-          <p>Nenhum podcast selecionado. Volte à página de podcasts e clique em "Ouvir" em algum podcast para começar a ouvir.</p>
-        </div>
-      )}
-    </section>
+      <div className="podcast-list-container">
+        <h2>Podcasts existentes</h2>
+        {podcasts.length === 0 && <p>Nenhum podcast cadastrado ainda.</p>}
+        <ul>
+          {podcasts.map((podcast) => (
+            <li key={podcast.id} className={selectedPodcast?.id === podcast.id ? 'selected' : ''}>
+              <div className="podcast-item-info" onClick={() => handleSelectPodcast(podcast)}>
+                <strong>{podcast.titulo}</strong> - {podcast.descricao}
+              </div>
+              <button className="delete-btn" onClick={() => handleDeletePodcast(podcast)}>
+                Excluir
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 
