@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   isLoggedIn: boolean;
+  role: 'user' | 'admin'; // Adicione esta linha
 }
 
 export interface AuthFormData {

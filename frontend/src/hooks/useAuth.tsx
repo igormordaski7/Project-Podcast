@@ -83,6 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: usuarioData.Nome || usuarioData.nome || 'Usuário',
         email: usuarioData.Email || usuarioData.email || credentials.email,
         isLoggedIn: true,
+        role: (usuarioData.Role || usuarioData.role || 'user') as 'user' | 'admin' // Adicione esta linha
       };
       
       setUser(userData);
@@ -165,6 +166,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem('token');
     if (token) {
       console.log('Token encontrado no localStorage');
+      // Aqui você pode adicionar lógica para validar o token
+      // e buscar os dados do usuário (incluindo role) se necessário
     }
   }, []);
 

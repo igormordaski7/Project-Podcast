@@ -5,7 +5,8 @@ import PodcastPage from '../../ui/pages/PodcastPage';
 import PlaybackPage from '../../ui/pages/PlaybackPage';
 import MainLayout from '../../ui/layouts/MainLayout';
 import LoginPage from '../../ui/pages/auth/LoginPage';
-import RegisterPage from '../../ui/pages/auth/RegisterPage';
+import AdminPage from '../../ui/pages/AdminPage';
+
 
 const AppRouter: React.FC = () => {
   const { currentPage } = useNavigation();
@@ -20,8 +21,8 @@ const AppRouter: React.FC = () => {
         return <PlaybackPage />;
       case 'login':
         return <LoginPage />;
-      case 'register':
-        return <RegisterPage />;
+      case 'admin':
+        return <AdminPage />;
       default:
         return <HomePage />;
     }
@@ -29,7 +30,7 @@ const AppRouter: React.FC = () => {
 
   const page = renderPage();
 
-  if (['login', 'register'].includes(currentPage)) {
+  if ([ 'login'].includes(currentPage)) {
     return page;
   }
 
