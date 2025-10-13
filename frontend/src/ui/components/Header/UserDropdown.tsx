@@ -6,15 +6,25 @@ import './Header.css';
 
 const UserDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, initialized } = useAuth();
   const { navigateTo } = useNavigation();
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => {
+    if (initialized) {
+      setIsOpen(!isOpen);
+    }
+  };
 
   const handleLoginClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsOpen(false);
     navigateTo('login');
+  };
+
+  const handleRegisterClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsOpen(false);
+    navigateTo('register');
   };
 
   const handleLogout = () => {
@@ -26,11 +36,25 @@ const UserDropdown: React.FC = () => {
   const handleAdminClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsOpen(false);
-    navigateTo('admin'); // ou a rota da sua tela de admin
+    navigateTo('admin');
   };
 
-  // Verificar se o usuário é admin
   const isAdmin = user?.role === 'admin';
+
+  // Mostrar loading enquanto a autenticação não foi inicializada
+  if (!initialized) {
+    return (
+      <div className="user-wrap">
+        <button 
+          className="icon-btn" 
+          title="Carregando..."
+          disabled
+        >
+          <img src={userIcon} alt="Carregando..." />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="user-wrap">
@@ -39,7 +63,7 @@ const UserDropdown: React.FC = () => {
         onClick={toggleDropdown}
         aria-haspopup="true" 
         aria-expanded={isOpen}
-        title="Usuário"
+        title={user?.isLoggedIn ? `Usuário: ${user.name}` : 'Usuário'}
       >
         <img src={userIcon} alt="Usuário" />
       </button>
@@ -53,7 +77,6 @@ const UserDropdown: React.FC = () => {
               {isAdmin && <small className="admin-badge">Administrador</small>}
             </div>
             
-            {/* Mostrar "Tela Admin" apenas para usuários com role admin */}
             {isAdmin && (
               <a href="#" onClick={handleAdminClick}>
                 Tela Admin
@@ -63,7 +86,10 @@ const UserDropdown: React.FC = () => {
             <a href="#" onClick={handleLogout}>Sair</a>
           </>
         ) : (
-          <a href="#" onClick={handleLoginClick}>Acessar</a>
+          <>
+            <a href="#" onClick={handleLoginClick}>Acessar</a>
+            <a href="#" onClick={handleRegisterClick}>Cadastrar</a>
+          </>
         )}
       </div>
     </div>
